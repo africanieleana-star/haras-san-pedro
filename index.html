@@ -1421,13 +1421,25 @@ document.getElementById('btn-admin-login').addEventListener('click', async () =>
   }
 });
 
-function fileToBase64(file){
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+const CLOUDINARY_CLOUD_NAME = "zfue5boy";
+const CLOUDINARY_UPLOAD_PRESET = "fotos-caballos";
+
+async function subirFoto(file){
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', fotos-caballos);
+
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${zfue5boy}/image/upload`, {
+    method: 'POST',
+    body: formData
   });
+
+  if(!res.ok){
+    throw new Error('No se pudo subir la foto a Cloudinary');
+  }
+
+  const data = await res.json();
+  return data.secure_url;
 }
 
 document.getElementById('btn-agregar-lote').addEventListener('click', async () => {
@@ -1448,7 +1460,7 @@ document.getElementById('btn-agregar-lote').addEventListener('click', async () =
 
   let fotos = [];
   try{
-    fotos = await Promise.all(archivos.map(fileToBase64));
+        fotos = await Promise.all(archivos.map(subirFoto));
   }catch(e){
     console.error('Error procesando las fotos', e);
     alert('Hubo un problema con alguna foto, el lote se guarda sin ellas.');
