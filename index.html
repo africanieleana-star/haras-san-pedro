@@ -46,6 +46,7 @@
   justify-content:center;
   z-index:5000;
   padding:20px;
+  overflow-y:auto;
 }
 .modal-overlay.oculto{ display:none; }
 .modal-box{
@@ -56,6 +57,8 @@
   width:100%;
   text-align:center;
   box-shadow:0 10px 40px rgba(0,0,0,.3);
+  max-height:90vh;
+  overflow-y:auto;
 }
 .modal-box h2{ margin:0 0 8px; font-size:1.6rem; }
 .modal-text{
@@ -240,7 +243,9 @@
   .account-modal-box{
     position:relative;
     max-width:420px;
-  }
+    max-height:90vh;
+  overflow-y:auto;
+}
 
   .horse-divider{
     width:64px;height:3px;background:var(--white);
