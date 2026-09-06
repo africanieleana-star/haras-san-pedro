@@ -673,9 +673,6 @@
 </style>
 </head>
 <body>
-
-  <div id="welcome-modal" class="modal-overlay">
-  <div class="modal-box">
     
 <div id="welcome-modal" class="modal-overlay">
   <div class="modal-box">
@@ -723,6 +720,27 @@
       </form>
     </div>
 
+  </div>
+</div>
+
+    <div id="complete-profile-modal" class="modal-overlay oculto">
+  <div class="modal-box">
+    <h2 class="serif">Completá tu perfil</h2>
+    <p class="modal-text">Para poder ofertar necesitamos tu teléfono y tu CUIT/CUIL.</p>
+
+    <div class="field" style="margin-bottom: 12px; text-align: left;">
+      <label for="cp-telefono">Teléfono / Celular *</label>
+      <input type="tel" id="cp-telefono" placeholder="11 1234 5678" required />
+    </div>
+
+    <div class="field" style="margin-bottom: 16px; text-align: left;">
+      <label for="cp-cuit">CUIT / CUIL *</label>
+      <input type="text" id="cp-cuit" placeholder="20-12345678-9" required />
+    </div>
+
+    <div id="complete-profile-aviso"></div>
+
+    <button type="button" class="btn btn-primary" id="btn-complete-profile" style="width:100%;">Guardar y continuar</button>
   </div>
 </div>
 
