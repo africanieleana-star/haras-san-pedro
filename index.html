@@ -1718,41 +1718,6 @@ document.getElementById('btn-complete-profile').addEventListener('click', async 
   await refreshHorses();
 });
 
-document.getElementById('btn-google-login').addEventListener('click', async () => {
-  try{
-    const result = await auth.signInWithPopup(googleProvider);
-    const user = result.user;
-    const email = normalizeEmail(user.email);
-    const nombreCompleto = (user.displayName || '').split(' ');
-    const nombre = nombreCompleto[0] || 'Usuario';
-    const apellido = nombreCompleto.slice(1).join(' ') || '';
-
-    await loadRegistrations();
-    let record = registrations.find(r => r.id === email);
-    if(!record){
-      record = {
-        id: email, nombre, apellido, telefono: '', cuit: '', email,
-        authProvider: 'google',
-        registradoEl: new Date().toISOString()
-      };
-      registrations.push(record);
-      await saveRegistrations();
-    }
-    currentUser = record;
-    ocultarModalBienvenida();
-    cerrarAccountModal();
-
-    if(perfilIncompleto(currentUser)){
-      abrirCompleteProfileModal();
-    } else {
-      updateQuienSoy();
-      await refreshHorses();
-    }
-  }catch(e){
-    console.error('Error con el login de Google', e);
-    alert('No se pudo iniciar sesión con Google. Probá de nuevo o registrate con email.');
-  }
-});
 
 // ----- Inicio -----
 async function init(){
