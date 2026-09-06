@@ -675,23 +675,48 @@
 <body>
 
   <div id="welcome-modal" class="modal-overlay">
-  <div class="modal-box">
-    <h2 class="serif">Bienvenido</h2>
-    <p class="modal-text">Registrate o iniciá sesión para ofertar y participar de los remates.</p>
+    <div class="modal-box">
+      
+      <!-- Vista 1: Selección de método de ingreso -->
+      <div id="modal-step-initial">
+        <h2 class="serif">Bienvenido</h2>
+        <p class="modal-text">Registrate o iniciá sesión para ofertar y participar de los remates.</p>
 
-    <button class="btn btn-google" id="btn-google-login">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.7 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35 26.8 36 24 36c-5.3 0-9.8-3.3-11.4-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.6 5l6.3 5.3C40.8 36 44 30.6 44 24c0-1.3-.1-2.6-.4-3.5z"/></svg>
-      Continuar con Google
-    </button>
+        <button class="btn btn-google" id="btn-google-login">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.7 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35 26.8 36 24 36c-5.3 0-9.8-3.3-11.4-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.6 5l6.3 5.3C40.8 36 44 30.6 44 24c0-1.3-.1-2.6-.4-3.5z"/></svg>
+          Continuar con Google
+        </button>
 
-    <div class="modal-divider">o</div>
+        <div class="modal-divider">o</div>
 
-    <p class="modal-line">¿Ya tenés cuenta? <button class="link-inline" id="modal-link-login">Iniciá sesión</button></p>
-    <p class="modal-line">¿No tenés cuenta? <button class="link-inline" id="modal-link-registro">Registrate aquí</button></p>
+        <p class="modal-line">¿Ya tenés cuenta? <button class="link-inline" id="modal-link-login">Iniciá sesión</button></p>
+        <p class="modal-line">¿No tenés cuenta? <button class="link-inline" id="modal-link-registro">Registrate aquí</button></p>
 
-    <button class="btn btn-ghost modal-skip" id="btn-modal-skip">Seguir viendo el catálogo</button>
+        <button class="btn btn-ghost modal-skip" id="btn-modal-skip">Seguir viendo el catálogo</button>
+      </div>
+
+      <!-- Vista 2: Datos obligatorios requeridos tras loguearse con Google -->
+      <div id="modal-step-extra-data" style="display: none;">
+        <h2 class="serif">Datos Requeridos</h2>
+        <p class="modal-text">Para continuar y poder realizar ofertas, necesitamos que completes estos datos obligatorios.</p>
+        
+        <form id="form-google-extra">
+          <div class="field" style="margin-bottom: 12px; text-align: left;">
+            <label for="google-cuit">CUIT / CUIL *</label>
+            <input type="text" id="google-cuit" placeholder="20-12345678-9" required />
+          </div>
+          
+          <div class="field" style="margin-bottom: 16px; text-align: left;">
+            <label for="google-phone">Teléfono / Celular *</label>
+            <input type="tel" id="google-phone" placeholder="11 1234 5678" required />
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Completar Registro</button>
+        </form>
+      </div>
+
+    </div>
   </div>
-</div>
 
   <div id="splash-screen">
   <img id="splash-logo" class="logo" alt="Cargando Haras San Pedro">
@@ -1754,6 +1779,90 @@ init();
 
 // Actualización periódica para ver ofertas de otros participantes
 setInterval(refreshHorses, 5000);
+
+// --- LÓGICA DE REGISTRO / GOOGLE / CUIT Y CELULAR ---
+document.addEventListener('DOMContentLoaded', () => {
+  const welcomeModal = document.getElementById('welcome-modal');
+  const stepInitial = document.getElementById('modal-step-initial');
+  const stepExtraData = document.getElementById('modal-step-extra-data');
+  const btnGoogle = document.getElementById('btn-google-login');
+  const formGoogleExtra = document.getElementById('form-google-extra');
+  const navAccountBtn = document.querySelector('.nav-account-btn');
+  const btnModalSkip = document.getElementById('btn-modal-skip');
+
+  let tempGoogleUser = null;
+
+  function checkSession() {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser && currentUser.name && navAccountBtn) {
+      navAccountBtn.textContent = currentUser.name;
+      navAccountBtn.classList.add('logged-in');
+    }
+  }
+
+  if (btnGoogle) {
+    btnGoogle.addEventListener('click', () => {
+      tempGoogleUser = {
+        name: "Juan Pérez",
+        email: "juan.perez@gmail.com"
+      };
+
+      const savedUser = JSON.parse(localStorage.getItem('user_' + tempGoogleUser.email));
+
+      if (savedUser && savedUser.cuit && savedUser.phone) {
+        loginUser(savedUser);
+      } else {
+        if (stepInitial) stepInitial.style.display = 'none';
+        if (stepExtraData) stepExtraData.style.display = 'block';
+      }
+    });
+  }
+
+  if (formGoogleExtra) {
+    formGoogleExtra.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const cuit = document.getElementById('google-cuit').value.trim();
+      const phone = document.getElementById('google-phone').value.trim();
+
+      if (!cuit || !phone) {
+        alert('Por favor, completa todos los campos obligatorios.');
+        return;
+      }
+
+      const fullUserData = {
+        ...tempGoogleUser,
+        cuit: cuit,
+        phone: phone
+      };
+
+      localStorage.setItem('user_' + fullUserData.email, JSON.stringify(fullUserData));
+      loginUser(fullUserData);
+    });
+  }
+
+  function loginUser(userData) {
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    
+    if (navAccountBtn) {
+      navAccountBtn.textContent = userData.name;
+      navAccountBtn.classList.add('logged-in');
+    }
+
+    if (welcomeModal) welcomeModal.classList.add('oculto');
+    if (stepExtraData) stepExtraData.style.display = 'none';
+    if (stepInitial) stepInitial.style.display = 'block';
+
+    alert(`¡Bienvenido/a, ${userData.name}! Tu registro se ha completado correctamente.`);
+  }
+
+  if (btnModalSkip) {
+    btnModalSkip.addEventListener('click', () => {
+      if (welcomeModal) welcomeModal.classList.add('oculto');
+    });
+  }
+
+  checkSession();
+});
 </script>
 
 </body>
