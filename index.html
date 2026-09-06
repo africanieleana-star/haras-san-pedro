@@ -1801,7 +1801,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (btnGoogle) {
-    btnGoogle.addEventListener('click', () => {
+    btnGoogle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // Evita que otros eventos cierren el modal
+
       tempGoogleUser = {
         name: "Juan Pérez",
         email: "juan.perez@gmail.com"
@@ -1812,6 +1815,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (savedUser && savedUser.cuit && savedUser.phone) {
         loginUser(savedUser);
       } else {
+        // Asegura que el modal permanezca visible y cambie de vista
+        if (welcomeModal) welcomeModal.classList.remove('oculto');
         if (stepInitial) stepInitial.style.display = 'none';
         if (stepExtraData) stepExtraData.style.display = 'block';
       }
@@ -1821,6 +1826,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formGoogleExtra) {
     formGoogleExtra.addEventListener('submit', (e) => {
       e.preventDefault();
+      e.stopPropagation();
+
       const cuit = document.getElementById('google-cuit').value.trim();
       const phone = document.getElementById('google-phone').value.trim();
 
@@ -1856,7 +1863,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (btnModalSkip) {
-    btnModalSkip.addEventListener('click', () => {
+    btnModalSkip.addEventListener('click', (e) => {
+      e.preventDefault();
       if (welcomeModal) welcomeModal.classList.add('oculto');
     });
   }
