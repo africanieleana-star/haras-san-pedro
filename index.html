@@ -1766,6 +1766,25 @@ async function init(){
   await loadHorses();
   await loadRegistrations();
   renderHorses();
+
+  // Revisa si Firebase ya tiene una sesión de Google activa (persiste entre recargas)
+  auth.onAuthStateChanged(async (user) => {
+    if(user && !currentUser){
+      const email = normalizeEmail(user.email);
+      await loadRegistrations();
+      const record = registrations.find(r => r.id === email);
+      if(record){
+        currentUser = record;
+        updateQuienSoy();
+        renderHorses();
+        if(perfilIncompleto(currentUser)){
+          abrirCompleteProfileModal();
+        }
+      }
+    }
+    updateQuienSoy();
+  });
+
   updateQuienSoy();
 
   const splash = document.getElementById('splash-screen');
