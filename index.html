@@ -1463,7 +1463,7 @@ async function subirFoto(file){
   formData.append('file', file);
   formData.append('upload_preset', "fotos-caballos");
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${zfue5boy}/image/upload`, {
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
     method: 'POST',
     body: formData
   });
