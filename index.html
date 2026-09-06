@@ -1825,50 +1825,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Guardar datos y loguear al usuario
-  if (formGoogleExtra) {
-    formGoogleExtra.addEventListener('submit', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+ const formGoogleExtra = document.getElementById('form-google-extra');
 
-      const name = document.getElementById('google-name').value.trim();
-      const cuit = document.getElementById('google-cuit').value.trim();
-      const phone = document.getElementById('google-phone').value.trim();
+if (formGoogleExtra) {
+  formGoogleExtra.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-      if (!name || !cuit || !phone) {
-        alert('Por favor, completa todos los campos.');
-        return;
-      }
+    const name = document.getElementById('google-name') ? document.getElementById('google-name').value.trim() : '';
+    const cuit = document.getElementById('google-cuit').value.trim();
+    const phone = document.getElementById('google-phone').value.trim();
 
-      const userData = { name, cuit, phone };
+    if (!cuit || !phone) {
+      alert('Por favor, completa todos los campos obligatorios.');
+      return;
+    }
 
-      localStorage.setItem('currentUser', JSON.stringify(userData));
+    // 1. Armamos el objeto con la misma estructura que usa el registro manual
+    const fullUserData = {
+      nombre: name || (tempGoogleUser ? tempGoogleUser.name : ''),
+      email: tempGoogleUser ? tempGoogleUser.email : 'usuario_google@gmail.com',
+      cuit: cuit,
+      telefono: phone,
+      fechaRegistro: new Date().toISOString()
+    };
+
+    try {
+      // 2. GUARDAR EN FIRESTORE (Para que el Administrador lo vea)
+      // Ajusta 'usuarios' o 'registros' según el nombre exacto de tu colección en Firestore
+      await db.collection('usuarios').doc(fullUserData.email).set(fullUserData, { merge: true });
+
+      // 3. Guardar en localStorage para la sesión local
+      localStorage.setItem('currentUser', JSON.stringify(fullUserData));
+      localStorage.setItem('user_' + fullUserData.email, JSON.stringify(fullUserData));
+
+      // 4. Actualizar interfaz y cerrar modal
       actualizarBotonNavegacion();
 
-      if (welcomeModal) {
-        welcomeModal.classList.add('oculto');
-        welcomeModal.style.display = 'none';
-      }
-      if (stepExtraData) stepExtraData.style.display = 'none';
-      if (stepInitial) stepInitial.style.display = 'block';
+      const welcomeModal = document.getElementById('welcome-modal');
+      if (welcomeModal) welcomeModal.style.display = 'none';
 
-      alert(`¡Bienvenido/a, ${name}!`);
-    });
-  }
+      alert(`¡Registro completado con éxito, ${fullUserData.nombre}!`);
 
-  if (btnModalSkip) {
-    btnModalSkip.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (welcomeModal) {
-        welcomeModal.classList.add('oculto');
-        welcomeModal.style.display = 'none';
-      }
-    });
-  }
-
-  actualizarBotonNavegacion();
-});
-</script>
-
-</body>
-</html>
+    } catch (error) {
+      console.error("Error al guardar en la base de datos:", error);
+      alert("Ocurrió un error al guardar tus datos. Inténtalo de nuevo.");
+    }
+  });
+}
