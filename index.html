@@ -677,7 +677,10 @@
   <div id="welcome-modal" class="modal-overlay">
   <div class="modal-box">
     
-    <!-- Vista 1: Selección de método de ingreso -->
+<div id="welcome-modal" class="modal-overlay">
+  <div class="modal-box">
+    
+    <!-- Vista 1: Botón Google -->
     <div id="modal-step-initial">
       <h2 class="serif">Bienvenido</h2>
       <p class="modal-text">Registrate o iniciá sesión para ofertar y participar de los remates.</p>
@@ -695,10 +698,10 @@
       <button class="btn btn-ghost modal-skip" id="btn-modal-skip">Seguir viendo el catálogo</button>
     </div>
 
-    <!-- Vista 2: Datos obligatorios requeridos -->
+    <!-- Vista 2: Pedir Nombre, CUIT y Celular -->
     <div id="modal-step-extra-data" style="display: none;">
-      <h2 class="serif">Completar Registro</h2>
-      <p class="modal-text">Para continuar y poder realizar ofertas, necesitamos tus datos.</p>
+      <h2 class="serif">Datos Requeridos</h2>
+      <p class="modal-text">Para continuar y poder realizar ofertas, necesitamos que completes estos datos obligatorios.</p>
       
       <form id="form-google-extra">
         <div class="field" style="margin-bottom: 12px; text-align: left;">
@@ -716,7 +719,7 @@
           <input type="tel" id="google-phone" placeholder="11 1234 5678" required />
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Finalizar Registro</button>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Completar Registro</button>
       </form>
     </div>
 
@@ -1762,8 +1765,9 @@ async function init(){
 init();
 
 setInterval(refreshHorses, 5000);
+// --- LÓGICA UNIFICADA DE SESIÓN Y REGISTRO ---
 
-// --- LÓGICA UNIFICADA DE SESIÓN Y GOOGLE ---
+// Función para actualizar el botón del menú principal
 function actualizarBotonNavegacion() {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
   const navAccountBtn = document.querySelector('.nav-account-btn');
@@ -1786,8 +1790,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnGoogle = document.getElementById('btn-google-login');
   const formGoogleExtra = document.getElementById('form-google-extra');
   const btnModalSkip = document.getElementById('btn-modal-skip');
+  const navAccountBtn = document.querySelector('.nav-account-btn');
 
-  // Al hacer clic en el botón de Google
+  // Permitir abrir el modal al hacer clic en el botón de la barra de navegación si no hay sesión
+  if (navAccountBtn) {
+    navAccountBtn.addEventListener('click', (e) => {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        e.preventDefault();
+        if (welcomeModal) {
+          welcomeModal.classList.remove('oculto');
+          welcomeModal.style.display = 'flex';
+        }
+      }
+    });
+  }
+
+  // Al hacer clic en "Continuar con Google" -> Mostrar formulario de datos
   if (btnGoogle) {
     btnGoogle.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1802,26 +1821,34 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Guardar datos y loguear al usuario
+  // Procesar y guardar Nombre, CUIT y Celular
   if (formGoogleExtra) {
     formGoogleExtra.addEventListener('submit', (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      const name = document.getElementById('google-name') ? document.getElementById('google-name').value.trim() : '';
-      const cuit = document.getElementById('google-cuit') ? document.getElementById('google-cuit').value.trim() : '';
-      const phone = document.getElementById('google-phone') ? document.getElementById('google-phone').value.trim() : '';
+      const nameInput = document.getElementById('google-name');
+      const cuitInput = document.getElementById('google-cuit');
+      const phoneInput = document.getElementById('google-phone');
+
+      const name = nameInput ? nameInput.value.trim() : '';
+      const cuit = cuitInput ? cuitInput.value.trim() : '';
+      const phone = phoneInput ? phoneInput.value.trim() : '';
 
       if (!name || !cuit || !phone) {
-        alert('Por favor, completa todos los campos.');
+        alert('Por favor, completa todos los campos obligatorios.');
         return;
       }
 
       const userData = { name, cuit, phone };
 
+      // Guardar sesión activa
       localStorage.setItem('currentUser', JSON.stringify(userData));
+      
+      // Actualizar botón superior
       actualizarBotonNavegacion();
 
+      // Cerrar y resetear modales
       if (welcomeModal) {
         welcomeModal.classList.add('oculto');
         welcomeModal.style.display = 'none';
@@ -1829,10 +1856,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (stepExtraData) stepExtraData.style.display = 'none';
       if (stepInitial) stepInitial.style.display = 'block';
 
-      alert(`¡Bienvenido/a, ${name}!`);
+      alert(`¡Bienvenido/a, ${name}! Tu registro ha sido completado.`);
     });
   }
 
+  // Omitir modal y cerrar
   if (btnModalSkip) {
     btnModalSkip.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1843,9 +1871,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Comprobar si hay un usuario activo al cargar la página
   actualizarBotonNavegacion();
 });
-</script>
-
-</body>
-</html>
