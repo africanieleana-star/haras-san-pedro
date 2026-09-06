@@ -942,8 +942,9 @@
   <section id="admin-section" class="card" style="display:none;">
     <h2 class="serif">Panel del administrador</h2>
     
-    <!-- Login Admin (Enuelto en <form> para evitar alertas de consola) -->
+    <!-- Login Admin (con campo de usuario oculto para accesibilidad/gestor de claves) -->
     <form id="admin-login-form" onsubmit="event.preventDefault();">
+      <input type="text" name="username" value="admin" autocomplete="username" style="display:none;" tabindex="-1" aria-hidden="true">
       <div id="admin-login">
         <div class="field" style="max-width:280px;">
           <label for="admin-pass">Contraseña</label>
