@@ -937,6 +937,9 @@
     </div>
 
     <div id="admin-panel" style="display:none;">
+  <div style="text-align:right; margin-bottom:10px;">
+    <button class="btn btn-ghost" id="btn-admin-logout" type="button">Cerrar sesión de administrador</button>
+  </div>
       <div class="admin-block">
         <h3 class="serif">Agregar lote</h3>
         <div class="field-row">
@@ -1440,6 +1443,14 @@ document.getElementById('btn-admin-toggle').addEventListener('click', () => {
   if(section.style.display === 'block') section.scrollIntoView({behavior:'smooth'});
 });
 
+  document.getElementById('btn-admin-logout').addEventListener('click', () => {
+  adminUnlocked = false;
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('admin-login').style.display = 'block';
+  document.getElementById('admin-pass').value = '';
+  document.getElementById('admin-section').style.display = 'none';
+});
+  
 document.getElementById('btn-admin-login').addEventListener('click', async () => {
   const pass = document.getElementById('admin-pass').value;
   const aviso = document.getElementById('admin-login-aviso');
