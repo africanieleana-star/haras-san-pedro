@@ -1750,19 +1750,29 @@ document.getElementById('btn-google-login').addEventListener('click', async () =
 
 // ----- Inicio -----
 async function init(){
-  await loadHorses();
-  await loadRegistrations();
-  renderHorses();
-  updateQuienSoy();
-
- const splash = document.getElementById('splash-screen');
-  setTimeout(() => {
-    splash.classList.add('oculto');
-    setTimeout(() => splash.remove(), 600);
-    mostrarModalBienvenida();
-  }, 1200);
+  try {
+    if (typeof loadHorses === 'function') await loadHorses();
+    if (typeof loadRegistrations === 'function') await loadRegistrations();
+    if (typeof renderHorses === 'function') renderHorses();
+    if (typeof updateQuienSoy === 'function') updateQuienSoy();
+  } catch (error) {
+    console.warn("Aviso al cargar datos:", error);
+  } finally {
+    // Esto garantiza que el cartel de "Cargando" se saque SIEMPRE
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+      setTimeout(() => {
+        splash.classList.add('oculto');
+        setTimeout(() => {
+          if (splash.parentNode) splash.parentNode.removeChild(splash);
+        }, 600);
+        if (typeof mostrarModalBienvenida === 'function') {
+          mostrarModalBienvenida();
+        }
+      }, 1200);
+    }
+  }
 }
-init();
 
 setInterval(refreshHorses, 5000);
 // --- LÓGICA UNIFICADA DE SESIÓN Y REGISTRO ---
