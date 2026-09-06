@@ -673,79 +673,55 @@
 </style>
 </head>
 <body>
-    
-<div id="welcome-modal" class="modal-overlay">
-  <div class="modal-box">
-    
-    <!-- Vista 1: Botón Google -->
-    <div id="modal-step-initial">
-      <h2 class="serif">Bienvenido</h2>
-      <p class="modal-text">Registrate o iniciá sesión para ofertar y participar de los remates.</p>
 
-      <button class="btn btn-google" id="btn-google-login">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.7 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35 26.8 36 24 36c-5.3 0-9.8-3.3-11.4-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.6 5l6.3 5.3C40.8 36 44 30.6 44 24c0-1.3-.1-2.6-.4-3.5z"/></svg>
-        Continuar con Google
-      </button>
-
-      <div class="modal-divider">o</div>
-
-      <p class="modal-line">¿Ya tenés cuenta? <button class="link-inline" id="modal-link-login">Iniciá sesión</button></p>
-      <p class="modal-line">¿No tenés cuenta? <button class="link-inline" id="modal-link-registro">Registrate aquí</button></p>
-
-      <button class="btn btn-ghost modal-skip" id="btn-modal-skip">Seguir viendo el catálogo</button>
-    </div>
-
-    <!-- Vista 2: Pedir Nombre, CUIT y Celular -->
-    <div id="modal-step-extra-data" style="display: none;">
-      <h2 class="serif">Datos Requeridos</h2>
-      <p class="modal-text">Para continuar y poder realizar ofertas, necesitamos que completes estos datos obligatorios.</p>
+  <div id="welcome-modal" class="modal-overlay">
+    <div class="modal-box">
       
-      <form id="form-google-extra">
-        <div class="field" style="margin-bottom: 12px; text-align: left;">
-          <label for="google-name">Nombre y Apellido *</label>
-          <input type="text" id="google-name" placeholder="Ej: María González" required />
-        </div>
+      <!-- Vista 1: Selección de método de ingreso -->
+      <div id="modal-step-initial">
+        <h2 class="serif">Bienvenido</h2>
+        <p class="modal-text">Registrate o iniciá sesión para ofertar y participar de los remates.</p>
 
-        <div class="field" style="margin-bottom: 12px; text-align: left;">
-          <label for="google-cuit">CUIT / CUIL *</label>
-          <input type="text" id="google-cuit" placeholder="20-12345678-9" required />
-        </div>
+        <button class="btn btn-google" id="btn-google-login">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.7 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.6 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35 26.8 36 24 36c-5.3 0-9.8-3.3-11.4-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.7 2-2 3.7-3.6 5l6.3 5.3C40.8 36 44 30.6 44 24c0-1.3-.1-2.6-.4-3.5z"/></svg>
+          Continuar con Google
+        </button>
+
+        <div class="modal-divider">o</div>
+
+        <p class="modal-line">¿Ya tenés cuenta? <button class="link-inline" id="modal-link-login">Iniciá sesión</button></p>
+        <p class="modal-line">¿No tenés cuenta? <button class="link-inline" id="modal-link-registro">Registrate aquí</button></p>
+
+        <button class="btn btn-ghost modal-skip" id="btn-modal-skip">Seguir viendo el catálogo</button>
+      </div>
+
+      <!-- Vista 2: Datos obligatorios requeridos -->
+      <div id="modal-step-extra-data" style="display: none;">
+        <h2 class="serif">Completar Registro</h2>
+        <p class="modal-text">Para continuar y poder realizar ofertas, necesitamos tus datos.</p>
         
-        <div class="field" style="margin-bottom: 16px; text-align: left;">
-          <label for="google-phone">Teléfono / Celular *</label>
-          <input type="tel" id="google-phone" placeholder="11 1234 5678" required />
-        </div>
+        <form id="form-google-extra">
+          <div class="field" style="margin-bottom: 12px; text-align: left;">
+            <label for="google-name">Nombre y Apellido *</label>
+            <input type="text" id="google-name" placeholder="Ej: María González" required />
+          </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Completar Registro</button>
-      </form>
-    </div>
+          <div class="field" style="margin-bottom: 12px; text-align: left;">
+            <label for="google-cuit">CUIT / CUIL *</label>
+            <input type="text" id="google-cuit" placeholder="20-12345678-9" required />
+          </div>
+          
+          <div class="field" style="margin-bottom: 16px; text-align: left;">
+            <label for="google-phone">Teléfono / Celular *</label>
+            <input type="tel" id="google-phone" placeholder="11 1234 5678" required />
+          </div>
 
-  </div>
-</div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Finalizar Registro</button>
+        </form>
+      </div>
 
-    <div id="complete-profile-modal" class="modal-overlay oculto">
-  <div class="modal-box">
-    <h2 class="serif">Completá tu perfil</h2>
-    <p class="modal-text">Para poder ofertar necesitamos tu teléfono y tu CUIT/CUIL.</p>
-
-    <div class="field" style="margin-bottom: 12px; text-align: left;">
-      <label for="cp-telefono">Teléfono / Celular *</label>
-      <input type="tel" id="cp-telefono" placeholder="11 1234 5678" required />
-    </div>
-
-    <div class="field" style="margin-bottom: 16px; text-align: left;">
-      <label for="cp-cuit">CUIT / CUIL *</label>
-      <input type="text" id="cp-cuit" placeholder="20-12345678-9" required />
-    </div>
-
-    <div id="complete-profile-aviso"></div>
-
-    <button type="button" class="btn btn-primary" id="btn-complete-profile" style="width:100%;">Guardar y continuar</button>
-  </div>
-</div>
-
-<div id="splash-screen">
-  <img id="splash-logo" class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA4QAAAOECAYAAAD5Tv87AAAAtGVYSWZJSSoACAAAAAYAEgEDAAEAAAABAAAAGgEFAAEAAABWAAAAGwEFAAEAAABeAAAAKAEDAAEAAAACAAAAEwIDAAEAAAABAAAAaYcEAAEAAABmAAAAAAAAAGAAAAABAAAAYAAAAAEAAAAGAACQBwAEAAAAMDIxMAGRBwAEAAAAAQIDAACgBwAEAAAAMDEwMAGgAwABAAAA//8AAAKgBAABAAAAhAMAAAOgBAABAAAAhAMAAAAAAACAWB40AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAGBmlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSfvu78nIGlkPSdXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQnPz4KPHg6eG1wbWV0YSB4bWxuczp4PSdhZG9iZTpuczptZXRhLyc+CjxyZGY6UkRGIHhtbG5zOnJkZj0naHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyc+CgogPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9JycKICB4bWxuczpBdHRyaWI9J2h0dHA6Ly9ucy5hdHRyaWJ1dGlvbi5jb20vYWRzLzEuMC8nPgogIDxBdHRyaWI6QWRzPgogICA8cmRmOlNlcT4KICAgIDxyZGY6bGkgcmRmOnBhcnNlVHlwZT0nUmVzb3VyY2UnPgogICAgIDxBdHRyaWI6Q3JlYXRlZD4yMDI2LTA5LTA0PC9BdHRyaWI6Q3JlYXRlZD4KICAgICA8QXR0cmliOkRhdGE+eyZxdW90O2RvYyZxdW90OzomcXVvdDtEQUZuUUpCWGJ5USZxdW90OywmcXVvdDt1c2VyJnF1b3Q7OiZxdW90O1VBRTU3MDVhc0tzJnF1b3Q7LCZxdW90O2JyYW5kJnF1b3Q7OiZxdW90O0VxdWlwbyBkZSBFbGVhbmEgQWZyaWNhbmkmcXVvdDssJnF1b3Q7dGVtcGxhdGUmcXVvdDs6JnF1b3Q7TG9nbyBBc3Ryb2xvZ2lhIFRhcm90IE1pbmltYWxpc3RhIEJsYW5jbyB5IE5lZ3JvJnF1b3Q7fTwvQXR0cmliOkRhdGE+CiAgICAgPEF0dHJpYjpFeHRJZD5hYTczY2Q1ZC03OGEyLTQ5ZTQtOThhYS1mMWYyNTRmMzI2MmU8L0F0dHJpYjpFeHRJZD4KICAgICA8QXR0cmliOkZiSWQ+NTI1MjY1OTE0MTc5NTgwPC9BdHRyaWI6RmJJZD4KICAgICA8QXR0cmliOlRvdWNoVHlwZT4yPC9BdHRyaWI6VG91Y2hUeXBlPgogICAgPC9yZGY6bGk+CiAgIDwvcmRmOlNlcT4KICA8L0F0dHJpYjpBZHM+CiA8L3JkZjpEZXNjcmlwdGlvbj4KCiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0nJwogIHhtbG5zOmRjPSdodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyc+CiAgPGRjOnRpdGxlPgogICA8cmRmOkFsdD4KICAgIDxyZGY6bGkgeG1sOmxhbmc9J3gtZGVmYXVsdCc+SGFyYXMgU2FuIFBlZHJvIExvZ28gKDkwMMKgw5fCoDkwMMKgcHgpIC0gMTwvcmRmOmxpPgogICA8L3JkZjpBbHQ+CiAgPC9kYzp0aXRsZT4KIDwvcmRmOkRlc2NyaXB0aW9uPgoKIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PScnCiAgeG1sbnM6cGRmPSdodHRwOi8vbnMuYWRvYmUuY29tL3BkZi8xLjMvJz4KICA8cGRmOkF1dGhvcj5FbGVhbmEgQWZyaWNhbmk8L3BkZjpBdXRob3I+CiA8L3JkZjpEZXNjcmlwdGlvbj4KCiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0nJwogIHhtbG5zOnhtcD0naHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyc+CiAgPHhtcDpDcmVhdG9yVG9vbD5DYW52YSBkb2M9REFGblFKQlhieVEgdXNlcj1VQUU1NzA1YXNLcyBicmFuZD1FcXVpcG8gZGUgRWxlYW5hIEFmcmljYW5pIHRlbXBsYXRlPUxvZ28gQXN0cm9sb2dpYSBUYXJvdCBNaW5pbWFsaXN0YSBCbGFuY28geSBOZWdybzwveG1wOkNyZWF0b3JUb29sPgogPC9yZGY6RGVzY3JpcHRpb24+CjwvcmRmOlJERj4KPC94OnhtcG1ldGE+Cjw/eHBhY2tldCBlbmQ9J3InPz4Vya4s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" alt="Cargando Haras San Pedro">
+  <div id="splash-screen">
+  <img id="splash-logo" class="logo" alt="Cargando Haras San Pedro">
 </div>
 
 <header class="hero">
@@ -834,76 +810,81 @@
 
     
 
-   <!-- Login -->
-    <form id="form-login">
+    <!-- Login -->
+    <div id="login-form">
       <h2 class="serif">Iniciá sesión</h2>
       <p class="sub">Entrá con el email y la contraseña que usaste al registrarte.</p>
       <div class="field-row">
         <div class="field">
           <label for="login-email">Email</label>
-          <input id="login-email" type="email" autocomplete="email" required>
+          <input id="login-email" type="email" autocomplete="email">
         </div>
         <div class="field">
           <label for="login-password">Contraseña</label>
-          <input id="login-password" type="password" autocomplete="current-password" required>
+          <input id="login-password" type="password" autocomplete="current-password">
         </div>
       </div>
       <div style="margin-top:16px;">
-        <button type="submit" class="btn btn-primary" id="btn-login">Ingresar</button>
+        <button class="btn btn-primary" id="btn-login">Ingresar</button>
       </div>
       <div id="login-aviso"></div>
-    </form>
+    </div>
 
     <!-- Registro -->
-    <form id="form-registro" style="display:none;">
+    <div id="registro-form" style="display:none;">
       <h2 class="serif">Creá tu cuenta</h2>
       <p class="sub">La vas a usar para ofertar y para volver a entrar más adelante.</p>
       <div class="field-row">
         <div class="field">
           <label for="reg-nombre">Nombre</label>
-          <input id="reg-nombre" type="text" autocomplete="given-name" required>
+          <input id="reg-nombre" type="text" autocomplete="given-name">
         </div>
         <div class="field">
           <label for="reg-apellido">Apellido</label>
-          <input id="reg-apellido" type="text" autocomplete="family-name" required>
+          <input id="reg-apellido" type="text" autocomplete="family-name">
         </div>
       </div>
       <div class="field-row">
         <div class="field">
           <label for="reg-telefono">Teléfono</label>
-          <input id="reg-telefono" type="tel" placeholder="Ej: 1122334455" autocomplete="tel" required>
+          <input id="reg-telefono" type="tel" placeholder="Ej: 1122334455" autocomplete="tel">
         </div>
         <div class="field">
           <label for="reg-email">Email (será tu usuario)</label>
-          <input id="reg-email" type="email" autocomplete="email" required>
+          <input id="reg-email" type="email" autocomplete="email">
         </div>
       </div>
 
       <div class="field-row">
-        <div class="field">
-          <label for="reg-cuit">CUIT / CUIL</label>
-          <input id="reg-cuit" type="text" placeholder="Ej: 20345678901" autocomplete="off" required>
-        </div>
-      </div>
+  <div class="field">
+    <label for="reg-cuit">CUIT / CUIL</label>
+    <input id="reg-cuit" type="text" placeholder="Ej: 20345678901">
+  </div>
+</div>
 
+      
       <div class="field-row">
         <div class="field">
           <label for="reg-password">Contraseña</label>
-          <input id="reg-password" type="password" autocomplete="new-password" required>
+          <input id="reg-password" type="password" autocomplete="new-password">
         </div>
         <div class="field">
           <label for="reg-password-confirm">Repetí la contraseña</label>
-          <input id="reg-password-confirm" type="password" autocomplete="new-password" required>
+          <input id="reg-password-confirm" type="password" autocomplete="new-password">
         </div>
       </div>
       <div style="margin-top:16px;">
-        <button type="submit" class="btn btn-primary" id="btn-registrar">Crear cuenta</button>
+        <button class="btn btn-primary" id="btn-registrar">Crear cuenta</button>
       </div>
       <div id="registro-aviso"></div>
-    </form>
+    </div>
+  </div>
+  </div>
 
-    
-   <!-- Cómo ofertar -->
+
+
+
+  <!-- Cómo ofertar -->
   <section id="como-ofertar-section" class="card app-section">
     <h2 class="serif">Cómo ofertar</h2>
     <div class="pasos-grid">
@@ -914,6 +895,25 @@
           <p>Creá tu cuenta con email y contraseña, o ingresá con Google.</p>
         </div>
       </div>
+
+      <div id="complete-profile-modal" class="modal-overlay oculto">
+  <div class="modal-box">
+    <h2 class="serif">Un dato más</h2>
+    <p class="modal-text">Para poder ofertar necesitamos tu teléfono y tu CUIT/CUIL.</p>
+    <div class="field" style="margin-bottom:12px;">
+      <label for="cp-telefono">Teléfono</label>
+      <input id="cp-telefono" type="tel" placeholder="Ej: 1122334455">
+    </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label for="cp-cuit">CUIT / CUIL</label>
+      <input id="cp-cuit" type="text" placeholder="Ej: 20345678901">
+    </div>
+    <button class="btn btn-primary" id="btn-complete-profile" style="width:100%;">Guardar y continuar</button>
+    <div id="complete-profile-aviso"></div>
+  </div>
+</div>
+
+      
       <div class="paso-item">
         <span class="paso-numero">2</span>
         <div>
@@ -932,7 +932,7 @@
         <span class="paso-numero">4</span>
         <div>
           <strong>Si ganás, te contactamos</strong>
-          <p>Al cierre del lote nos comunicamos con el ganador para coordinar el pago y la entrega del animal.</p>
+          <p><!-- ⚠️ EDITAR si tu proceso es distinto -->Al cierre del lote nos comunicamos con el ganador para coordinar el pago y la entrega del animal.</p>
         </div>
       </div>
     </div>
@@ -959,34 +959,29 @@
     <br>
     <button class="link" id="btn-admin-toggle">Acceso administrador</button>
   </footer>
-<!-- Admin -->
+
+  <!-- Admin -->
   <section id="admin-section" class="card" style="display:none;">
     <h2 class="serif">Panel del administrador</h2>
-    
-    <!-- Login Admin (con campo de usuario oculto para accesibilidad/gestor de claves) -->
-    <form id="admin-login-form" onsubmit="event.preventDefault();">
-      <input type="text" name="username" value="admin" autocomplete="username" style="display:none;" tabindex="-1" aria-hidden="true">
-      <div id="admin-login">
-        <div class="field" style="max-width:280px;">
-          <label for="admin-pass">Contraseña</label>
-          <input id="admin-pass" type="password" autocomplete="current-password">
-        </div>
-        <button class="btn btn-primary" style="margin-top:12px;" id="btn-admin-login" type="submit">Ingresar</button>
-        <div id="admin-login-aviso"></div>
+    <div id="admin-login">
+      <div class="field" style="max-width:280px;">
+        <label for="admin-pass">Contraseña</label>
+        <input id="admin-pass" type="password">
       </div>
-    </form>
+      <button class="btn btn-primary" style="margin-top:12px;" id="btn-admin-login">Ingresar</button>
+      <div id="admin-login-aviso"></div>
+    </div>
 
     <div id="admin-panel" style="display:none;">
-      <div style="text-align:right; margin-bottom:10px;">
-        <button class="btn btn-ghost" id="btn-admin-logout" type="button">Cerrar sesión de administrador</button>
-      </div>
-      
+  <div style="text-align:right; margin-bottom:10px;">
+    <button class="btn btn-ghost" id="btn-admin-logout" type="button">Cerrar sesión de administrador</button>
+  </div>
       <div class="admin-block">
         <h3 class="serif">Agregar lote</h3>
         <div class="field-row">
           <div class="field">
             <label for="nh-nombre">Nombre del caballo</label>
-            <input id="nh-nombre" type="text" autocomplete="off">
+            <input id="nh-nombre" type="text">
           </div>
           <div class="field">
             <label for="nh-precio">Precio de partida</label>
@@ -994,25 +989,25 @@
           </div>
         </div>
         <div class="field-row">
-          <div class="field">
-            <label for="nh-desc">Descripción breve</label>
-            <input id="nh-desc" type="text" placeholder="Pelaje, edad, línea de sangre, aptitud..." autocomplete="off">
-          </div>
-        </div>
+  <div class="field">
+    <label for="nh-desc">Descripción breve</label>
+    <input id="nh-desc" type="text" placeholder="Pelaje, edad, línea de sangre, aptitud...">
+  </div>
+</div>
 
-        <div class="field-row">
-          <div class="field">
-            <label for="nh-fotos">Fotos del caballo (podés elegir varias)</label>
-            <input id="nh-fotos" type="file" accept="image/*" multiple>
-          </div>
-        </div>
+<div class="field-row">
+  <div class="field">
+    <label for="nh-fotos">Fotos del caballo (podés elegir varias)</label>
+    <input id="nh-fotos" type="file" accept="image/*" multiple>
+  </div>
+</div>
 
-        <div class="field-row">
-          <div class="field">
-            <label for="nh-cierre">Fecha y hora de cierre (opcional)</label>
-            <input id="nh-cierre" type="datetime-local">
-          </div>
-        </div>
+<div class="field-row">
+  <div class="field">
+    <label for="nh-cierre">Fecha y hora de cierre (opcional)</label>
+    <input id="nh-cierre" type="datetime-local">
+  </div>
+</div>
 
         <button class="btn btn-primary" style="margin-top:12px;" id="btn-agregar-lote">Agregar lote</button>
       </div>
@@ -1028,6 +1023,8 @@
       </div>
     </div>
   </section>
+
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -1768,35 +1765,23 @@ document.getElementById('btn-google-login').addEventListener('click', async () =
 
 // ----- Inicio -----
 async function init(){
-  try {
-    if (typeof loadHorses === 'function') await loadHorses();
-    if (typeof loadRegistrations === 'function') await loadRegistrations();
-    if (typeof renderHorses === 'function') renderHorses();
-    if (typeof updateQuienSoy === 'function') updateQuienSoy();
-  } catch (error) {
-    console.warn("Aviso al cargar datos:", error);
-  } finally {
-    // Esto garantiza que el cartel de "Cargando" se saque SIEMPRE
-    const splash = document.getElementById('splash-screen');
-    if (splash) {
-      setTimeout(() => {
-        splash.classList.add('oculto');
-        setTimeout(() => {
-          if (splash.parentNode) splash.parentNode.removeChild(splash);
-        }, 600);
-        if (typeof mostrarModalBienvenida === 'function') {
-          mostrarModalBienvenida();
-        }
-      }, 1200);
-    }
-  }
+  await loadHorses();
+  await loadRegistrations();
+  renderHorses();
+  updateQuienSoy();
+
+ const splash = document.getElementById('splash-screen');
+  setTimeout(() => {
+    splash.classList.add('oculto');
+    setTimeout(() => splash.remove(), 600);
+    mostrarModalBienvenida();
+  }, 1200);
 }
+init();
 
-init();  
 setInterval(refreshHorses, 5000);
-// --- LÓGICA UNIFICADA DE SESIÓN Y REGISTRO ---
 
-// Función para actualizar el botón del menú principal
+// --- LÓGICA SIMPLE DE SESIÓN ---
 function actualizarBotonNavegacion() {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
   const navAccountBtn = document.querySelector('.nav-account-btn');
@@ -1819,23 +1804,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnGoogle = document.getElementById('btn-google-login');
   const formGoogleExtra = document.getElementById('form-google-extra');
   const btnModalSkip = document.getElementById('btn-modal-skip');
-  const navAccountBtn = document.querySelector('.nav-account-btn');
 
-  // Permitir abrir el modal al hacer clic en el botón de la barra de navegación si no hay sesión
-  if (navAccountBtn) {
-    navAccountBtn.addEventListener('click', (e) => {
-      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      if (!currentUser) {
-        e.preventDefault();
-        if (welcomeModal) {
-          welcomeModal.classList.remove('oculto');
-          welcomeModal.style.display = 'flex';
-        }
-      }
-    });
-  }
-
-  // Al hacer clic en "Continuar con Google" -> Mostrar formulario de datos
+  // Al hacer clic en Google, solo pasamos a pedir los datos
   if (btnGoogle) {
     btnGoogle.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1850,34 +1820,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Procesar y guardar Nombre, CUIT y Celular
+  // Guardar datos y loguear al usuario
   if (formGoogleExtra) {
     formGoogleExtra.addEventListener('submit', (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      const nameInput = document.getElementById('google-name');
-      const cuitInput = document.getElementById('google-cuit');
-      const phoneInput = document.getElementById('google-phone');
-
-      const name = nameInput ? nameInput.value.trim() : '';
-      const cuit = cuitInput ? cuitInput.value.trim() : '';
-      const phone = phoneInput ? phoneInput.value.trim() : '';
+      const name = document.getElementById('google-name').value.trim();
+      const cuit = document.getElementById('google-cuit').value.trim();
+      const phone = document.getElementById('google-phone').value.trim();
 
       if (!name || !cuit || !phone) {
-        alert('Por favor, completa todos los campos obligatorios.');
+        alert('Por favor, completa todos los campos.');
         return;
       }
 
       const userData = { name, cuit, phone };
 
-      // Guardar sesión activa
       localStorage.setItem('currentUser', JSON.stringify(userData));
-      
-      // Actualizar botón superior
       actualizarBotonNavegacion();
 
-      // Cerrar y resetear modales
       if (welcomeModal) {
         welcomeModal.classList.add('oculto');
         welcomeModal.style.display = 'none';
@@ -1885,11 +1847,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (stepExtraData) stepExtraData.style.display = 'none';
       if (stepInitial) stepInitial.style.display = 'block';
 
-      alert(`¡Bienvenido/a, ${name}! Tu registro ha sido completado.`);
+      alert(`¡Bienvenido/a, ${name}!`);
     });
   }
 
-  // Omitir modal y cerrar
   if (btnModalSkip) {
     btnModalSkip.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1900,6 +1861,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Comprobar si hay un usuario activo al cargar la página
   actualizarBotonNavegacion();
 });
+</script>
+
+</body>
+</html>
