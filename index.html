@@ -1588,21 +1588,33 @@ function renderAdmin(){
   } else {
     regEl.innerHTML = `
       <table>
-        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Email</th><th>Registrado</th></tr></thead>
+        <thead><tr><th>Nombre</th><th>Teléfono</th><th>CUIT/CUIL</th><th>Email</th><th>Registrado</th><th></th></tr></thead>
         <tbody>
           ${registrations.map(r => `
             <tr>
               <td>${r.nombre} ${r.apellido}</td>
-              <td>${r.telefono}</td>
+              <td>${r.telefono || '—'}</td>
+              <td>${r.cuit || '—'}</td>
               <td>${r.email || '—'}</td>
               <td>${new Date(r.registradoEl).toLocaleString('es-AR')}</td>
+              <td><button class="btn btn-danger" data-delete-registration="${r.id}" type="button">Eliminar</button></td>
             </tr>
           `).join('')}
         </tbody>
       </table>
     `;
+
+    regEl.querySelectorAll('[data-delete-registration]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-delete-registration');
+        if(!confirm('¿Eliminar este contacto registrado? Esta acción no se puede deshacer.')) return;
+        await loadRegistrations();
+        registrations = registrations.filter(r => r.id !== id);
+        await saveRegistrations();
+        renderAdmin();
+      });
+    });
   }
-}
 // ----- Popup de bienvenida -----
 function mostrarModalBienvenida(){
   if(currentUser) return;
