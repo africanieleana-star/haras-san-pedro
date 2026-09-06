@@ -1000,17 +1000,20 @@ let adminUnlocked = false;
 function fmt(n){
   return "$" + Number(n).toLocaleString('es-AR');
 }
-
+  
 // ----- Storage helpers -----
 async function loadHorses(){
   try{
-    const data = localStorage.getItem('subasta_horses');
-    horses = data ? JSON.parse(data) : [];
-  }catch(e){ horses = []; console.error('Error cargando lotes', e); }
+    const doc = await db.collection('subasta').doc('horses').get();
+    horses = doc.exists ? (doc.data().lista || []) : [];
+  }catch(e){
+    horses = [];
+    console.error('Error cargando lotes', e);
+  }
 }
 async function saveHorses(){
   try{
-    localStorage.setItem('subasta_horses', JSON.stringify(horses));
+    await db.collection('subasta').doc('horses').set({ lista: horses });
   }catch(e){
     console.error('Error guardando lotes', e);
     alert('No se pudo guardar el lote: ' + e.message);
@@ -1018,16 +1021,20 @@ async function saveHorses(){
 }
 async function loadRegistrations(){
   try{
-    const data = localStorage.getItem('subasta_registrations');
-    registrations = data ? JSON.parse(data) : [];
-  }catch(e){ registrations = []; console.error('Error cargando registros', e); }
+    const doc = await db.collection('subasta').doc('registrations').get();
+    registrations = doc.exists ? (doc.data().lista || []) : [];
+  }catch(e){
+    registrations = [];
+    console.error('Error cargando registros', e);
+  }
 }
 async function saveRegistrations(){
   try{
-    localStorage.setItem('subasta_registrations', JSON.stringify(registrations));
-  }catch(e){ console.error('Error guardando registros', e); }
+    await db.collection('subasta').doc('registrations').set({ lista: registrations });
+  }catch(e){
+    console.error('Error guardando registros', e);
+  }
 }
-
 // ----- Contraseñas -----
 async function hashPassword(password){
   const enc = new TextEncoder().encode(password);
