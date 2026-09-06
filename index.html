@@ -938,29 +938,33 @@
     <br>
     <button class="link" id="btn-admin-toggle">Acceso administrador</button>
   </footer>
-
-  <!-- Admin -->
+<!-- Admin -->
   <section id="admin-section" class="card" style="display:none;">
     <h2 class="serif">Panel del administrador</h2>
-    <div id="admin-login">
-      <div class="field" style="max-width:280px;">
-        <label for="admin-pass">Contraseña</label>
-        <input id="admin-pass" type="password">
+    
+    <!-- Login Admin (Enuelto en <form> para evitar alertas de consola) -->
+    <form id="admin-login-form" onsubmit="event.preventDefault();">
+      <div id="admin-login">
+        <div class="field" style="max-width:280px;">
+          <label for="admin-pass">Contraseña</label>
+          <input id="admin-pass" type="password" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary" style="margin-top:12px;" id="btn-admin-login" type="submit">Ingresar</button>
+        <div id="admin-login-aviso"></div>
       </div>
-      <button class="btn btn-primary" style="margin-top:12px;" id="btn-admin-login">Ingresar</button>
-      <div id="admin-login-aviso"></div>
-    </div>
+    </form>
 
     <div id="admin-panel" style="display:none;">
-  <div style="text-align:right; margin-bottom:10px;">
-    <button class="btn btn-ghost" id="btn-admin-logout" type="button">Cerrar sesión de administrador</button>
-  </div>
+      <div style="text-align:right; margin-bottom:10px;">
+        <button class="btn btn-ghost" id="btn-admin-logout" type="button">Cerrar sesión de administrador</button>
+      </div>
+      
       <div class="admin-block">
         <h3 class="serif">Agregar lote</h3>
         <div class="field-row">
           <div class="field">
             <label for="nh-nombre">Nombre del caballo</label>
-            <input id="nh-nombre" type="text">
+            <input id="nh-nombre" type="text" autocomplete="off">
           </div>
           <div class="field">
             <label for="nh-precio">Precio de partida</label>
@@ -968,25 +972,25 @@
           </div>
         </div>
         <div class="field-row">
-  <div class="field">
-    <label for="nh-desc">Descripción breve</label>
-    <input id="nh-desc" type="text" placeholder="Pelaje, edad, línea de sangre, aptitud...">
-  </div>
-</div>
+          <div class="field">
+            <label for="nh-desc">Descripción breve</label>
+            <input id="nh-desc" type="text" placeholder="Pelaje, edad, línea de sangre, aptitud..." autocomplete="off">
+          </div>
+        </div>
 
-<div class="field-row">
-  <div class="field">
-    <label for="nh-fotos">Fotos del caballo (podés elegir varias)</label>
-    <input id="nh-fotos" type="file" accept="image/*" multiple>
-  </div>
-</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="nh-fotos">Fotos del caballo (podés elegir varias)</label>
+            <input id="nh-fotos" type="file" accept="image/*" multiple>
+          </div>
+        </div>
 
-<div class="field-row">
-  <div class="field">
-    <label for="nh-cierre">Fecha y hora de cierre (opcional)</label>
-    <input id="nh-cierre" type="datetime-local">
-  </div>
-</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="nh-cierre">Fecha y hora de cierre (opcional)</label>
+            <input id="nh-cierre" type="datetime-local">
+          </div>
+        </div>
 
         <button class="btn btn-primary" style="margin-top:12px;" id="btn-agregar-lote">Agregar lote</button>
       </div>
@@ -1002,8 +1006,6 @@
       </div>
     </div>
   </section>
-
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
