@@ -1768,7 +1768,7 @@ async function init(){
   renderHorses();
   updateQuienSoy();
 
-  const splash = document.getElementById('splash-screen');
+ const splash = document.getElementById('splash-screen');
   setTimeout(() => {
     splash.classList.add('oculto');
     setTimeout(() => splash.remove(), 600);
@@ -1777,8 +1777,129 @@ async function init(){
 }
 init();
 
-// Actualización periódica para ver ofertas de otros participantes
+// Actualización periódica para ver ofertas
 setInterval(refreshHorses, 5000);
+
+// --- SISTEMA UNIFICADO DE SESIÓN Y REGISTRO ---
+
+// Función para actualizar la barra de navegación con el usuario actual
+function actualizarBotonNavegacion() {
+  const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+  const navAccountBtn = document.querySelector('.nav-account-btn');
+  
+  if (navAccountBtn) {
+    if (currentUser && currentUser.name) {
+      navAccountBtn.textContent = currentUser.name;
+      navAccountBtn.classList.add('logged-in');
+    } else {
+      navAccountBtn.textContent = 'Registrarme / Iniciar sesión';
+      navAccountBtn.classList.remove('logged-in');
+    }
+  }
+}
+
+// Inicializar eventos de autenticación
+function inicializarAuth() {
+  const welcomeModal = document.getElementById('welcome-modal');
+  const stepInitial = document.getElementById('modal-step-initial');
+  const stepExtraData = document.getElementById('modal-step-extra-data');
+  const btnGoogle = document.getElementById('btn-google-login');
+  const formGoogleExtra = document.getElementById('form-google-extra');
+  const btnModalSkip = document.getElementById('btn-modal-skip');
+
+  let tempGoogleUser = null;
+
+  // 1. Clic en Google
+  if (btnGoogle) {
+    btnGoogle.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Datos devueltos por Google (Simulación / API)
+      tempGoogleUser = {
+        name: "Juan Pérez",
+        email: "juan.perez@gmail.com"
+      };
+
+      const savedUser = JSON.parse(localStorage.getItem('user_' + tempGoogleUser.email));
+
+      // Si ya completó CUIT y Celular previamente
+      if (savedUser && savedUser.cuit && savedUser.phone) {
+        completarLogin(savedUser);
+      } else {
+        // Mantiene el modal abierto y pasa al formulario de CUIT/Teléfono
+        if (welcomeModal) {
+          welcomeModal.classList.remove('oculto');
+          welcomeModal.style.display = 'flex';
+        }
+        if (stepInitial) stepInitial.style.display = 'none';
+        if (stepExtraData) stepExtraData.style.display = 'block';
+      }
+    });
+  }
+
+  // 2. Envío del formulario CUIT y Teléfono
+  if (formGoogleExtra) {
+    formGoogleExtra.addEventListener('submit', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const cuit = document.getElementById('google-cuit').value.trim();
+      const phone = document.getElementById('google-phone').value.trim();
+
+      if (!cuit || !phone) {
+        alert('Por favor, completa el CUIT y Teléfono.');
+        return;
+      }
+
+      const fullUserData = {
+        ...tempGoogleUser,
+        cuit: cuit,
+        phone: phone
+      };
+
+      // Guardar registro de este correo
+      localStorage.setItem('user_' + fullUserData.email, JSON.stringify(fullUserData));
+      completarLogin(fullUserData);
+    });
+  }
+
+  // 3. Completar inicio de sesión y cerrar modal
+  function completarLogin(userData) {
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    actualizarBotonNavegacion();
+
+    // Cerrar modal
+    if (welcomeModal) {
+      welcomeModal.classList.add('oculto');
+      welcomeModal.style.display = 'none';
+    }
+    
+    // Restablecer vistas del modal para futuras aperturas
+    if (stepExtraData) stepExtraData.style.display = 'none';
+    if (stepInitial) stepInitial.style.display = 'block';
+
+    alert(`¡Bienvenido/a, ${userData.name}!`);
+  }
+
+  // Omitir modal
+  if (btnModalSkip) {
+    btnModalSkip.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (welcomeModal) {
+        welcomeModal.classList.add('oculto');
+        welcomeModal.style.display = 'none';
+      }
+    });
+  }
+
+  // Verificar estado al cargar
+  actualizarBotonNavegacion();
+}
+
+// Ejecutar inicialización de eventos
+inicializarAuth();
+</script>
 
 // --- LÓGICA DE REGISTRO / GOOGLE / CUIT Y CELULAR ---
 document.addEventListener('DOMContentLoaded', () => {
