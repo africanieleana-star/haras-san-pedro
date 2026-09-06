@@ -776,6 +776,23 @@
       <button class="auth-tab" id="tab-registro" type="button">Crear cuenta</button>
     </div>
 
+    <div id="complete-profile-modal" class="modal-overlay oculto">
+  <div class="modal-box">
+    <h2 class="serif">Un dato más</h2>
+    <p class="modal-text">Para poder ofertar necesitamos tu teléfono y tu CUIT/CUIL.</p>
+    <div class="field" style="margin-bottom:12px;">
+      <label for="cp-telefono">Teléfono</label>
+      <input id="cp-telefono" type="tel" placeholder="Ej: 1122334455">
+    </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label for="cp-cuit">CUIT / CUIL</label>
+      <input id="cp-cuit" type="text" placeholder="Ej: 20345678901">
+    </div>
+    <button class="btn btn-primary" id="btn-complete-profile" style="width:100%;">Guardar y continuar</button>
+    <div id="complete-profile-aviso"></div>
+  </div>
+</div>
+
     <!-- Login -->
     <div id="login-form">
       <h2 class="serif">Iniciá sesión</h2>
@@ -820,6 +837,15 @@
           <input id="reg-email" type="email" autocomplete="email">
         </div>
       </div>
+
+      <div class="field-row">
+  <div class="field">
+    <label for="reg-cuit">CUIT / CUIL</label>
+    <input id="reg-cuit" type="text" placeholder="Ej: 20345678901">
+  </div>
+</div>
+
+      
       <div class="field-row">
         <div class="field">
           <label for="reg-password">Contraseña</label>
@@ -1064,13 +1090,14 @@ document.getElementById('btn-registrar').addEventListener('click', async () => {
   const nombre = document.getElementById('reg-nombre').value.trim();
   const apellido = document.getElementById('reg-apellido').value.trim();
   const telefono = document.getElementById('reg-telefono').value.trim();
+  const cuit = document.getElementById('reg-cuit').value.trim();
   const email = normalizeEmail(document.getElementById('reg-email').value);
   const password = document.getElementById('reg-password').value;
   const passwordConfirm = document.getElementById('reg-password-confirm').value;
   const aviso = document.getElementById('registro-aviso');
 
-  if(!nombre || !apellido || !telefono || !email || !password){
-    aviso.innerHTML = '<div class="aviso">Completá todos los campos, incluyendo email y contraseña.</div>';
+  if(!nombre || !apellido || !telefono || !cuit || !email || !password){
+    aviso.innerHTML = '<div class="aviso">Completá todos los campos, incluyendo teléfono, CUIT/CUIL y contraseña.</div>';
     return;
   }
   if(!email.includes('@')){
@@ -1095,7 +1122,7 @@ document.getElementById('btn-registrar').addEventListener('click', async () => {
 
   const passwordHash = await hashPassword(password);
   const record = {
-    id: email, nombre, apellido, telefono, email, passwordHash,
+    id: email, nombre, apellido, telefono, cuit, email, passwordHash,
     registradoEl: new Date().toISOString()
   };
   registrations.push(record);
@@ -1603,6 +1630,43 @@ document.getElementById('modal-link-registro').addEventListener('click', () => {
   abrirAccountModal();
 });
 
+function perfilIncompleto(user){
+  return !user.telefono || !user.cuit;
+}
+
+function abrirCompleteProfileModal(){
+  document.getElementById('complete-profile-modal').classList.remove('oculto');
+}
+function cerrarCompleteProfileModal(){
+  document.getElementById('complete-profile-modal').classList.add('oculto');
+}
+
+document.getElementById('btn-complete-profile').addEventListener('click', async () => {
+  const telefono = document.getElementById('cp-telefono').value.trim();
+  const cuit = document.getElementById('cp-cuit').value.trim();
+  const aviso = document.getElementById('complete-profile-aviso');
+
+  if(!telefono || !cuit){
+    aviso.innerHTML = '<div class="aviso">Completá teléfono y CUIT/CUIL para poder ofertar.</div>';
+    return;
+  }
+
+  await loadRegistrations();
+  const idx = registrations.findIndex(r => r.id === currentUser.id);
+  if(idx !== -1){
+    registrations[idx].telefono = telefono;
+    registrations[idx].cuit = cuit;
+    currentUser = registrations[idx];
+  }
+  await saveRegistrations();
+  cerrarCompleteProfileModal();
+  aviso.innerHTML = '';
+  document.getElementById('cp-telefono').value = '';
+  document.getElementById('cp-cuit').value = '';
+  updateQuienSoy();
+  await refreshHorses();
+});
+
 document.getElementById('btn-google-login').addEventListener('click', async () => {
   try{
     const result = await auth.signInWithPopup(googleProvider);
@@ -1616,7 +1680,7 @@ document.getElementById('btn-google-login').addEventListener('click', async () =
     let record = registrations.find(r => r.id === email);
     if(!record){
       record = {
-        id: email, nombre, apellido, telefono: '', email,
+        id: email, nombre, apellido, telefono: '', cuit: '', email,
         authProvider: 'google',
         registradoEl: new Date().toISOString()
       };
@@ -1625,8 +1689,14 @@ document.getElementById('btn-google-login').addEventListener('click', async () =
     }
     currentUser = record;
     ocultarModalBienvenida();
-    updateQuienSoy();
-    await refreshHorses();
+    cerrarAccountModal();
+
+    if(perfilIncompleto(currentUser)){
+      abrirCompleteProfileModal();
+    } else {
+      updateQuienSoy();
+      await refreshHorses();
+    }
   }catch(e){
     console.error('Error con el login de Google', e);
     alert('No se pudo iniciar sesión con Google. Probá de nuevo o registrate con email.');
