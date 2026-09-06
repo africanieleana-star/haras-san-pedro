@@ -1779,13 +1779,11 @@ init();
 
 setInterval(refreshHorses, 5000);
 
-// --- LÓGICA SIMPLE DE SESIÓN ---
+// --- LÓGICA UNIFICADA DE SESIÓN Y GOOGLE ---
 function actualizarBotonNavegacion() {
   const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-  // Busca el botón por clase o por ID
-  const navAccountBtn = document.querySelector('.nav-account-btn') || document.getElementById('nav-account-btn');
+  const navAccountBtn = document.querySelector('.nav-account-btn');
   
-  // Validar siempre que el elemento no sea null antes de asignar texto
   if (navAccountBtn) {
     if (currentUser && currentUser.name) {
       navAccountBtn.textContent = currentUser.name;
@@ -1805,7 +1803,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formGoogleExtra = document.getElementById('form-google-extra');
   const btnModalSkip = document.getElementById('btn-modal-skip');
 
-  // Al hacer clic en Google, solo pasamos a pedir los datos
+  // Al hacer clic en el botón de Google
   if (btnGoogle) {
     btnGoogle.addEventListener('click', (e) => {
       e.preventDefault();
@@ -1820,46 +1818,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
- const formGoogleExtra = document.getElementById('form-google-extra');
-
-// Guardar datos y loguear al usuario
+  // Guardar datos y loguear al usuario
   if (formGoogleExtra) {
-    formGoogleExtra.addEventListener('submit', async (e) => {
+    formGoogleExtra.addEventListener('submit', (e) => {
       e.preventDefault();
       e.stopPropagation();
 
-      const nameEl = document.getElementById('google-name');
-      const cuitEl = document.getElementById('google-cuit');
-      const phoneEl = document.getElementById('google-phone');
-
-      const name = nameEl ? nameEl.value.trim() : '';
-      const cuit = cuitEl ? cuitEl.value.trim() : '';
-      const phone = phoneEl ? phoneEl.value.trim() : '';
+      const name = document.getElementById('google-name') ? document.getElementById('google-name').value.trim() : '';
+      const cuit = document.getElementById('google-cuit') ? document.getElementById('google-cuit').value.trim() : '';
+      const phone = document.getElementById('google-phone') ? document.getElementById('google-phone').value.trim() : '';
 
       if (!name || !cuit || !phone) {
         alert('Por favor, completa todos los campos.');
         return;
       }
 
-      const userData = {
-        nombre: name,
-        email: (typeof tempGoogleUser !== 'undefined' && tempGoogleUser && tempGoogleUser.email) ? tempGoogleUser.email : 'usuario_google@gmail.com',
-        cuit: cuit,
-        telefono: phone,
-        fechaRegistro: new Date().toISOString()
-      };
+      const userData = { name, cuit, phone };
 
-      try {
-        // Intentar guardar en Firestore si está disponible en la app
-        if (typeof db !== 'undefined' && db && db.collection) {
-          await db.collection('usuarios').doc(userData.email).set(userData, { merge: true });
-        }
-      } catch (err) {
-        console.error("Error guardando en Firestore:", err);
-      }
-
-      // Guardar en sesión local para no depender únicamente de la red
-      localStorage.setItem('currentUser', JSON.stringify({ name: name, ...userData }));
+      localStorage.setItem('currentUser', JSON.stringify(userData));
       actualizarBotonNavegacion();
 
       if (welcomeModal) {
