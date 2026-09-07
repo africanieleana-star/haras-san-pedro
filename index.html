@@ -693,6 +693,41 @@
     font-size:.82rem;font-family:inherit;padding:0;
   }
 
+  .edit-fotos-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:6px;
+}
+.edit-foto-item{
+  position:relative;
+  width:70px;
+  height:70px;
+  border-radius:8px;
+  overflow:hidden;
+  border:1px solid var(--line);
+}
+.edit-foto-item img, .edit-foto-item video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.edit-foto-remove{
+  position:absolute;
+  top:2px;
+  right:2px;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:rgba(0,0,0,.65);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  line-height:1;
+  font-size:.9rem;
+}
+.edit-foto-remove:hover{ background:var(--danger); }
+
   /* admin */
   #admin-section table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.88rem;}
   #admin-section th,#admin-section td{
@@ -1149,6 +1184,41 @@
   <button id="lightbox-prev" type="button" class="lightbox-nav lightbox-nav-prev">&#8249;</button>
   <div id="lightbox-content" style="max-width:95vw; max-height:90vh; display:flex; align-items:center; justify-content:center;"></div>
   <button id="lightbox-next" type="button" class="lightbox-nav lightbox-nav-next">&#8250;</button>
+</div>
+
+  <div id="edit-lote-modal" class="modal-overlay oculto">
+  <div class="modal-box" style="max-width:560px; text-align:left;">
+    <h2 class="serif" style="text-align:center;">Editar lote</h2>
+    <div class="field" style="margin-bottom:12px;">
+      <label for="eh-nombre">Nombre del caballo</label>
+      <input id="eh-nombre" type="text">
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label for="eh-precio">Precio de partida</label>
+      <input id="eh-precio" type="number" step="10000">
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label for="eh-desc">Descripción breve</label>
+      <input id="eh-desc" type="text">
+    </div>
+    <div class="field" style="margin-bottom:12px;">
+      <label for="eh-cierre">Fecha y hora de cierre (opcional)</label>
+      <input id="eh-cierre" type="datetime-local">
+    </div>
+    <div class="field" style="margin-bottom:8px;">
+      <label>Fotos y videos actuales</label>
+      <div id="eh-fotos-actuales" class="edit-fotos-grid"></div>
+    </div>
+    <div class="field" style="margin-bottom:16px;">
+      <label for="eh-fotos-nuevas">Agregar fotos o videos</label>
+      <input id="eh-fotos-nuevas" type="file" accept="image/*,video/*" multiple>
+    </div>
+    <div id="edit-lote-aviso"></div>
+    <div style="display:flex; gap:10px; margin-top:8px;">
+      <button class="btn btn-primary" id="btn-guardar-edicion" style="flex:1;">Guardar cambios</button>
+      <button class="btn btn-ghost" id="btn-cancelar-edicion" style="flex:1;" type="button">Cancelar</button>
+    </div>
+  </div>
 </div>
   
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1827,6 +1897,7 @@ function renderAdmin(){
           ).join('')}
         </div>
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-ghost" data-action="edit" data-id="${h.id}">Editar lote</button>
           <button class="btn btn-ghost" data-action="toggle" data-id="${h.id}">${h.estado === 'cerrada' ? 'Reabrir lote' : 'Cerrar lote'}</button>
           <button class="btn btn-ghost" data-action="reset" data-id="${h.id}">Reiniciar ofertas</button>
           <button class="btn btn-danger" data-action="delete" data-id="${h.id}">Eliminar lote</button>
@@ -1841,7 +1912,10 @@ function renderAdmin(){
         await loadHorses();
         const h = horses.find(x => x.id === id);
         if(!h) return;
-        if(action === 'toggle'){
+        if(action === 'edit'){
+  abrirEditModal(h);
+  return;
+} else if(action === 'toggle'){
           h.estado = h.estado === 'cerrada' ? 'abierta' : 'cerrada';
         } else if(action === 'reset'){
           h.currentBid = h.precioPartida;
@@ -1893,6 +1967,110 @@ function renderAdmin(){
     });
   }
   }
+
+  // ----- Editar lote -----
+let editHorseId = null;
+let editFotosActuales = [];
+
+function renderEditFotosActuales(){
+  const cont = document.getElementById('eh-fotos-actuales');
+  if(editFotosActuales.length === 0){
+    cont.innerHTML = '<div class="empty-state" style="padding:10px;">Sin fotos ni videos cargados.</div>';
+    return;
+  }
+  cont.innerHTML = editFotosActuales.map((foto, i) => {
+    const item = normalizarMedia(foto);
+    const mediaHtml = item.tipo === 'video'
+      ? `<video src="${optimizarMediaUrl(item.url, 'video')}" muted></video>`
+      : `<img src="${optimizarMediaUrl(item.url, 'imagen')}" alt="">`;
+    return `
+      <div class="edit-foto-item">
+        ${mediaHtml}
+        <button type="button" class="edit-foto-remove" data-remove-index="${i}" title="Quitar">&times;</button>
+      </div>
+    `;
+  }).join('');
+
+  cont.querySelectorAll('[data-remove-index]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const i = parseInt(btn.getAttribute('data-remove-index'), 10);
+      editFotosActuales.splice(i, 1);
+      renderEditFotosActuales();
+    });
+  });
+}
+
+function abrirEditModal(h){
+  editHorseId = h.id;
+  editFotosActuales = (h.fotos || []).slice();
+
+  document.getElementById('eh-nombre').value = h.nombre || '';
+  document.getElementById('eh-precio').value = h.precioPartida || '';
+  document.getElementById('eh-desc').value = h.descripcion || '';
+  document.getElementById('eh-cierre').value = h.cierre || '';
+  document.getElementById('eh-fotos-nuevas').value = '';
+  document.getElementById('edit-lote-aviso').innerHTML = '';
+  renderEditFotosActuales();
+
+  document.getElementById('edit-lote-modal').classList.remove('oculto');
+}
+
+function cerrarEditModal(){
+  document.getElementById('edit-lote-modal').classList.add('oculto');
+  editHorseId = null;
+  editFotosActuales = [];
+}
+
+document.getElementById('btn-cancelar-edicion').addEventListener('click', cerrarEditModal);
+document.getElementById('edit-lote-modal').addEventListener('click', (e) => {
+  if(e.target.id === 'edit-lote-modal') cerrarEditModal();
+});
+
+document.getElementById('btn-guardar-edicion').addEventListener('click', async () => {
+  const nombre = document.getElementById('eh-nombre').value.trim();
+  const precio = parseInt(document.getElementById('eh-precio').value, 10);
+  const desc = document.getElementById('eh-desc').value.trim();
+  const cierreVal = document.getElementById('eh-cierre').value;
+  const fotosInput = document.getElementById('eh-fotos-nuevas');
+  const archivosNuevos = Array.from(fotosInput.files);
+  const aviso = document.getElementById('edit-lote-aviso');
+  const btn = document.getElementById('btn-guardar-edicion');
+
+  if(!nombre || !precio){
+    aviso.innerHTML = '<div class="aviso">Completá al menos el nombre y el precio de partida.</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  let fotosSubidas = [];
+  try{
+    fotosSubidas = await Promise.all(archivosNuevos.map(subirArchivo));
+  }catch(e){
+    console.error('Error subiendo fotos nuevas', e);
+    aviso.innerHTML = '<div class="aviso">Hubo un problema subiendo alguna foto nueva. Se guardan los demás cambios igual.</div>';
+    fotosSubidas = [];
+  }
+
+  await loadHorses();
+  const h = horses.find(x => x.id === editHorseId);
+  if(h){
+    h.nombre = nombre;
+    h.precioPartida = precio;
+    h.descripcion = desc;
+    h.cierre = cierreVal || null;
+    h.fotos = editFotosActuales.concat(fotosSubidas);
+    await saveHorses();
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Guardar cambios';
+  cerrarEditModal();
+  renderAdmin();
+  renderHorses();
+});
+  
 // ----- Popup de bienvenida -----
 function mostrarModalBienvenida(){
   if(currentUser) return;
