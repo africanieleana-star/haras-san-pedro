@@ -781,7 +781,7 @@
     </div>
 
     <p style="font-size:.8rem; color:#8a7f6a; margin-top:18px;">
-      Socios Criadores N.º 550
+      Socio Criador N.º 550
     </p>
   </section>
   <section id="contacto-section" class="card app-section">
@@ -1074,8 +1074,8 @@
 
 <div class="field-row">
   <div class="field">
-    <label for="nh-fotos">Fotos del caballo (podés elegir varias)</label>
-    <input id="nh-fotos" type="file" accept="image/*" multiple>
+    <label for="nh-fotos">Fotos y videos del caballo (podés elegir varios)</label>
+    <input id="nh-fotos" type="file" accept="image/*,video/*" multiple>
   </div>
 </div>
 
@@ -1376,7 +1376,10 @@ function primerNombreInicial(nombre, apellido){
   return nombre + ' ' + (apellido ? apellido.charAt(0) + '.' : '');
 }
 
-
+function normalizarMedia(item){
+  if(typeof item === 'string') return { url: item, tipo: 'imagen' };
+  return item;
+}
 
 function renderHorses(){
   const grid = document.getElementById('horses-grid');
@@ -1416,25 +1419,29 @@ function renderHorses(){
       : '';
 
     let galeria = '';
-    if(h.fotos && h.fotos.length > 0){
-      const dots = h.fotos.length > 1
-        ? `<div class="gallery-dots">${h.fotos.map((_, i) => `<span class="gallery-dot ${i === 0 ? 'active' : ''}" data-dot-index="${i}"></span>`).join('')}</div>`
-        : '';
-      const flechas = h.fotos.length > 1
-        ? `<button class="gallery-arrow gallery-prev" data-horse-id="${h.id}" data-dir="-1" type="button">&#8249;</button>
-           <button class="gallery-arrow gallery-next" data-horse-id="${h.id}" data-dir="1" type="button">&#8250;</button>`
-        : '';
-      galeria = `
-        <div class="horse-gallery" data-horse-id="${h.id}" data-index="0">
-          <img src="${h.fotos[0]}" alt="${h.nombre}" class="horse-gallery-img">
-          ${flechas}
-          ${dots}
-        </div>
-      `;
-    } else {
-      galeria = `<div class="horse-gallery horse-gallery-empty">Sin fotos cargadas</div>`;
-    }
+   if(h.fotos && h.fotos.length > 0){
+  const primero = normalizarMedia(h.fotos[0]);
+  const primerMediaHtml = primero.tipo === 'video'
+    ? `<video src="${primero.url}" class="horse-gallery-img" controls playsinline></video>`
+    : `<img src="${primero.url}" alt="${h.nombre}" class="horse-gallery-img">`;
 
+  const dots = h.fotos.length > 1
+    ? `<div class="gallery-dots">${h.fotos.map((_, i) => `<span class="gallery-dot ${i === 0 ? 'active' : ''}" data-dot-index="${i}"></span>`).join('')}</div>`
+    : '';
+  const flechas = h.fotos.length > 1
+    ? `<button class="gallery-arrow gallery-prev" data-horse-id="${h.id}" data-dir="-1" type="button">&#8249;</button>
+       <button class="gallery-arrow gallery-next" data-horse-id="${h.id}" data-dir="1" type="button">&#8250;</button>`
+    : '';
+  galeria = `
+    <div class="horse-gallery" data-horse-id="${h.id}" data-index="0">
+      ${primerMediaHtml}
+      ${flechas}
+      ${dots}
+    </div>
+  `;
+} else {
+  galeria = `<div class="horse-gallery horse-gallery-empty">Sin fotos ni videos cargados</div>`;
+}
     return `
       <div class="horse-card">
         <div class="lot-layout">
@@ -1506,7 +1513,14 @@ function setFoto(horseId, index){
   const total = horse.fotos.length;
   const nuevoIndex = ((index % total) + total) % total;
   container.setAttribute('data-index', nuevoIndex);
-  container.querySelector('.horse-gallery-img').src = horse.fotos[nuevoIndex];
+
+  const item = normalizarMedia(horse.fotos[nuevoIndex]);
+  const oldMedia = container.querySelector('.horse-gallery-img');
+  const newMediaHtml = item.tipo === 'video'
+    ? `<video src="${item.url}" class="horse-gallery-img" controls playsinline></video>`
+    : `<img src="${item.url}" alt="${horse.nombre}" class="horse-gallery-img">`;
+  oldMedia.outerHTML = newMediaHtml;
+
   container.querySelectorAll('.gallery-dot').forEach((dot, i) => {
     dot.classList.toggle('active', i === nuevoIndex);
   });
@@ -1582,22 +1596,25 @@ document.getElementById('btn-admin-login').addEventListener('click', async () =>
 const CLOUDINARY_CLOUD_NAME = "zfue5boy";
 const CLOUDINARY_UPLOAD_PRESET = "fotos-caballos";
 
-async function subirFoto(file){
+async function subirArchivo(file){
+  const esVideo = file.type.startsWith('video/');
+  const resourceType = esVideo ? 'video' : 'image';
+
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', "fotos-caballos");
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`, {
     method: 'POST',
     body: formData
   });
 
   if(!res.ok){
-    throw new Error('No se pudo subir la foto a Cloudinary');
+    throw new Error('No se pudo subir el archivo a Cloudinary');
   }
 
   const data = await res.json();
-  return data.secure_url;
+  return { url: data.secure_url, tipo: esVideo ? 'video' : 'imagen' };
 }
 
 document.getElementById('btn-agregar-lote').addEventListener('click', async () => {
@@ -1618,7 +1635,7 @@ document.getElementById('btn-agregar-lote').addEventListener('click', async () =
 
   let fotos = [];
   try{
-        fotos = await Promise.all(archivos.map(subirFoto));
+        fotos = await Promise.all(archivos.map(subirArchivo));
   }catch(e){
     console.error('Error procesando las fotos', e);
     alert('Hubo un problema con alguna foto, el lote se guarda sin ellas.');
