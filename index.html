@@ -728,6 +728,29 @@
 }
 .edit-foto-remove:hover{ background:var(--danger); }
 
+  .nh-foto-fila{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-top:8px;
+}
+.nh-foto-fila input[type="file"]{
+  flex:1;
+}
+.btn-quitar-fila{
+  width:32px;
+  height:32px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  background:none;
+  color:var(--danger);
+  cursor:pointer;
+  font-size:1rem;
+  line-height:1;
+}
+.btn-quitar-fila:hover{ background:var(--danger); color:#fff; }
+  
+
   /* admin */
   #admin-section table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.88rem;}
   #admin-section th,#admin-section td{
@@ -1149,8 +1172,9 @@
 
 <div class="field-row">
   <div class="field">
-    <label for="nh-fotos">Fotos y videos del caballo (podés elegir varios)</label>
-    <input id="nh-fotos" type="file" accept="image/*,video/*" multiple>
+    <label>Fotos y videos del caballo (elegí una por renglón)</label>
+    <div id="nh-fotos-filas"></div>
+    <button type="button" class="btn btn-ghost" id="btn-nh-agregar-foto" style="margin-top:8px;">+ Agregar otra foto o video</button>
   </div>
 </div>
 
@@ -1823,12 +1847,28 @@ async function subirArchivo(file){
   return { url: data.secure_url, tipo: esVideo ? 'video' : 'imagen' };
 }
 
+function crearFilaFoto(){
+  const cont = document.getElementById('nh-fotos-filas');
+  const fila = document.createElement('div');
+  fila.className = 'nh-foto-fila';
+  fila.innerHTML = `
+    <input type="file" accept="image/*,video/*">
+    <button type="button" class="btn-quitar-fila" title="Quitar renglón">&times;</button>
+  `;
+  fila.querySelector('.btn-quitar-fila').addEventListener('click', () => fila.remove());
+  cont.appendChild(fila);
+}
+crearFilaFoto();
+
+document.getElementById('btn-nh-agregar-foto').addEventListener('click', crearFilaFoto);
+
 document.getElementById('btn-agregar-lote').addEventListener('click', async () => {
   const nombre = document.getElementById('nh-nombre').value.trim();
   const precio = parseInt(document.getElementById('nh-precio').value, 10);
   const desc = document.getElementById('nh-desc').value.trim();
-  const fotosInput = document.getElementById('nh-fotos');
-  const archivos = Array.from(fotosInput.files);
+  const archivos = Array.from(document.querySelectorAll('#nh-fotos-filas input[type="file"]'))
+    .map(input => input.files[0])
+    .filter(Boolean);
   const btn = document.getElementById('btn-agregar-lote');
 
   if(!nombre || !precio){
@@ -1868,7 +1908,9 @@ document.getElementById('btn-agregar-lote').addEventListener('click', async () =
   document.getElementById('nh-precio').value = '';
   document.getElementById('nh-desc').value = '';
   document.getElementById('nh-cierre').value = '';
-  fotosInput.value = '';
+  document.getElementById('nh-fotos-filas').innerHTML = '';
+  crearFilaFoto();
+  
   btn.disabled = false;
   btn.textContent = 'Agregar lote';
   renderAdmin();
