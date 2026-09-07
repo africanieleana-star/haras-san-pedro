@@ -1422,8 +1422,8 @@ function renderHorses(){
    if(h.fotos && h.fotos.length > 0){
   const primero = normalizarMedia(h.fotos[0]);
   const primerMediaHtml = primero.tipo === 'video'
-    ? `<video src="${primero.url}" class="horse-gallery-img" controls playsinline></video>`
-    : `<img src="${primero.url}" alt="${h.nombre}" class="horse-gallery-img">`;
+  ? `<video src="${primero.url}" class="horse-gallery-img" controls muted playsinline></video>`
+  : `<img src="${primero.url}" alt="${h.nombre}" class="horse-gallery-img">`;
 
   const dots = h.fotos.length > 1
     ? `<div class="gallery-dots">${h.fotos.map((_, i) => `<span class="gallery-dot ${i === 0 ? 'active' : ''}" data-dot-index="${i}"></span>`).join('')}</div>`
@@ -1517,8 +1517,8 @@ function setFoto(horseId, index){
   const item = normalizarMedia(horse.fotos[nuevoIndex]);
   const oldMedia = container.querySelector('.horse-gallery-img');
   const newMediaHtml = item.tipo === 'video'
-    ? `<video src="${item.url}" class="horse-gallery-img" controls playsinline></video>`
-    : `<img src="${item.url}" alt="${horse.nombre}" class="horse-gallery-img">`;
+  ? `<video src="${item.url}" class="horse-gallery-img" controls muted playsinline></video>`
+  : `<img src="${item.url}" alt="${horse.nombre}" class="horse-gallery-img">`;
   oldMedia.outerHTML = newMediaHtml;
 
   container.querySelectorAll('.gallery-dot').forEach((dot, i) => {
