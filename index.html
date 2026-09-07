@@ -1162,6 +1162,7 @@ let currentUser = null; // {id, nombre, apellido, telefono, email}
 let horses = [];
 let registrations = [];
 let adminUnlocked = false;
+let galleryIndex = {}; 
 
 function fmt(n){
   return "$" + Number(n).toLocaleString('es-AR');
@@ -1457,21 +1458,22 @@ function renderHorses(){
       : '';
 
     let galeria = '';
- if(h.fotos && h.fotos.length > 0){
-  const primero = normalizarMedia(h.fotos[0]);
+if(h.fotos && h.fotos.length > 0){
+  const idxActual = galleryIndex[h.id] || 0;
+  const primero = normalizarMedia(h.fotos[idxActual] || h.fotos[0]);
   const primerMediaHtml = primero.tipo === 'video'
     ? `<video src="${optimizarMediaUrl(primero.url, 'video')}" class="horse-gallery-img" controls muted playsinline preload="metadata" poster="${posterUrl(primero.url)}"></video>`
     : `<img src="${optimizarMediaUrl(primero.url, 'imagen')}" alt="${h.nombre}" class="horse-gallery-img">`;
 
   const dots = h.fotos.length > 1
-    ? `<div class="gallery-dots">${h.fotos.map((_, i) => `<span class="gallery-dot ${i === 0 ? 'active' : ''}" data-dot-index="${i}"></span>`).join('')}</div>`
+    ? `<div class="gallery-dots">${h.fotos.map((_, i) => `<span class="gallery-dot ${i === idxActual ? 'active' : ''}" data-dot-index="${i}"></span>`).join('')}</div>`
     : '';
   const flechas = h.fotos.length > 1
     ? `<button class="gallery-arrow gallery-prev" data-horse-id="${h.id}" data-dir="-1" type="button">&#8249;</button>
        <button class="gallery-arrow gallery-next" data-horse-id="${h.id}" data-dir="1" type="button">&#8250;</button>`
     : '';
-  galeria = `
-    <div class="horse-gallery" data-horse-id="${h.id}" data-index="0">
+galeria = `
+    <div class="horse-gallery" data-horse-id="${h.id}" data-index="${idxActual}">
       ${primerMediaHtml}
       ${flechas}
       ${dots}
@@ -1543,16 +1545,6 @@ function renderHorses(){
     });
   });
 
-    grid.querySelectorAll('.gallery-dot').forEach(dot => {
-    dot.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const container = dot.closest('.horse-gallery');
-      const horseId = container.getAttribute('data-horse-id');
-      const index = parseInt(dot.getAttribute('data-dot-index'), 10);
-      setFoto(horseId, index);
-    });
-  });
-
   grid.querySelectorAll('.gallery-expand-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1575,6 +1567,7 @@ function setFoto(horseId, index){
   const total = horse.fotos.length;
   const nuevoIndex = ((index % total) + total) % total;
   container.setAttribute('data-index', nuevoIndex);
+  galleryIndex[horseId] = nuevoIndex;
 
   const item = normalizarMedia(horse.fotos[nuevoIndex]);
   const oldMedia = container.querySelector('.horse-gallery-img');
@@ -1639,6 +1632,11 @@ async function placeBid(horseId){
 }
 
 async function refreshHorses(){
+  const grid = document.getElementById('horses-grid');
+  const hayVideoReproduciendo = grid && Array.from(grid.querySelectorAll('video'))
+    .some(v => !v.paused && !v.ended);
+  if(hayVideoReproduciendo) return; // no interrumpimos si alguien está mirando un video
+
   await loadHorses();
   renderHorses();
   if(adminUnlocked) renderAdmin();
