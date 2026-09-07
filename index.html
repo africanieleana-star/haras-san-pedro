@@ -589,6 +589,28 @@
 .lightbox-nav:hover{ background:rgba(255,255,255,.3); }
 .lightbox-nav-prev{ left:16px; }
 .lightbox-nav-next{ right:16px; }
+
+#lightbox-content{
+  overflow:auto;
+}
+#lightbox-content.zoom-activo{
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+}
+.lightbox-img{
+  max-width:95vw;
+  max-height:90vh;
+  object-fit:contain;
+  cursor:zoom-in;
+  -webkit-user-drag:none;
+  user-select:none;
+}
+.lightbox-img.zoomed{
+  max-width:none;
+  max-height:none;
+  width:190vw;
+  cursor:zoom-out;
+}  
   
 .gallery-arrow{
   position:absolute;
@@ -1580,8 +1602,8 @@ if(h.fotos && h.fotos.length > 0){
   const idxActual = galleryIndex[h.id] || 0;
   const primero = normalizarMedia(h.fotos[idxActual] || h.fotos[0]);
  const primerMediaHtml = primero.tipo === 'video'
-    ? `<video src="${optimizarMediaUrl(primero.url, 'video')}" class="horse-gallery-img" controls muted autoplay loop playsinline preload="metadata" poster="${posterUrl(primero.url)}"></video>`
-    : `<img src="${optimizarMediaUrl(primero.url, 'imagen')}" alt="${h.nombre}" class="horse-gallery-img">`;
+     ? `<video src="${optimizarMediaUrl(primero.url, 'video')}" class="horse-gallery-img" controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false" muted autoplay loop playsinline preload="metadata" poster="${posterUrl(primero.url)}"></video>`
+    : `<img src="${optimizarMediaUrl(primero.url, 'imagen')}" alt="${h.nombre}" class="horse-gallery-img" draggable="false" oncontextmenu="return false">`;
 
   const dots = h.fotos.length > 1
     ? `<div class="gallery-dots">${h.fotos.map((_, i) => `<span class="gallery-dot ${i === idxActual ? 'active' : ''}" data-dot-index="${i}"></span>`).join('')}</div>`
@@ -1687,8 +1709,8 @@ function setFoto(horseId, index){
   const item = normalizarMedia(horse.fotos[nuevoIndex]);
   const oldMedia = container.querySelector('.horse-gallery-img');
 const newMediaHtml = item.tipo === 'video'
-    ? `<video src="${optimizarMediaUrl(item.url, 'video')}" class="horse-gallery-img" controls muted autoplay loop playsinline preload="metadata" poster="${posterUrl(item.url)}"></video>`
-    : `<img src="${optimizarMediaUrl(item.url, 'imagen')}" alt="${horse.nombre}" class="horse-gallery-img">`;
+    ? `<video src="${optimizarMediaUrl(item.url, 'video')}" class="horse-gallery-img" controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false" muted autoplay loop playsinline preload="metadata" poster="${posterUrl(item.url)}"></video>`
+    : `<img src="${optimizarMediaUrl(item.url, 'imagen')}" alt="${horse.nombre}" class="horse-gallery-img" draggable="false" oncontextmenu="return false">`;
   oldMedia.outerHTML = newMediaHtml;
 
   container.querySelectorAll('.gallery-dot').forEach((dot, i) => {
@@ -1721,14 +1743,24 @@ function renderLightboxContent(){
   const item = normalizarMedia(horse.fotos[lightboxIndex]);
   const content = document.getElementById('lightbox-content');
   if(item.tipo === 'video'){
-    content.innerHTML = `<video src="${optimizarMediaUrl(item.url, 'video')}" controls autoplay muted playsinline style="max-width:95vw;max-height:90vh;"></video>`;
+    content.innerHTML = `<video src="${optimizarMediaUrl(item.url, 'video')}" controls controlsList="nodownload noremoteplayback" disablePictureInPicture oncontextmenu="return false" autoplay muted playsinline style="max-width:95vw;max-height:90vh;"></video>`;
   } else {
-    content.innerHTML = `<img src="${optimizarMediaUrl(item.url, 'imagen')}" style="max-width:95vw;max-height:90vh;object-fit:contain;">`;
+    content.innerHTML = `<img id="lightbox-img-el" class="lightbox-img" src="${optimizarMediaUrl(item.url, 'imagen')}" draggable="false" oncontextmenu="return false" onclick="toggleZoomLightbox()">`;
   }
 
   const total = horse.fotos.length;
   document.getElementById('lightbox-prev').style.display = total > 1 ? 'flex' : 'none';
   document.getElementById('lightbox-next').style.display = total > 1 ? 'flex' : 'none';
+}
+
+function toggleZoomLightbox(){
+  const img = document.getElementById('lightbox-img-el');
+  const content = document.getElementById('lightbox-content');
+  if(!img) return;
+  img.classList.toggle('zoomed');
+  content.classList.toggle('zoom-activo');
+  content.scrollTop = 0;
+  content.scrollLeft = 0;
 }
 
 function moverLightbox(dir){
