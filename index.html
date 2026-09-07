@@ -568,24 +568,27 @@
 }
 .gallery-expand-btn:hover{ background:rgba(0,0,0,.65); }
 
-.gallery-expand-btn{
+.lightbox-nav{
   position:absolute;
-  top:10px;
-  right:10px;
-  background:rgba(0,0,0,.45);
+  top:50%;
+  transform:translateY(-50%);
+  background:rgba(255,255,255,.15);
   color:var(--white);
   border:none;
-  width:36px;
-  height:36px;
+  width:48px;
+  height:48px;
   border-radius:50%;
-  font-size:1.1rem;
+  font-size:1.8rem;
+  line-height:1;
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
-  z-index:5;
+  z-index:10;
 }
-.gallery-expand-btn:hover{ background:rgba(0,0,0,.65); }
+.lightbox-nav:hover{ background:rgba(255,255,255,.3); }
+.lightbox-nav-prev{ left:16px; }
+.lightbox-nav-next{ right:16px; }
   
 .gallery-arrow{
   position:absolute;
@@ -1139,10 +1142,13 @@
   </section>
 
 </div>
+  
 <!-- Lightbox para ampliar fotos y videos -->
 <div id="lightbox-modal" class="modal-overlay oculto" style="z-index:6000; background:rgba(0,0,0,.85);">
-  <button id="lightbox-close" type="button" style="position:absolute; top:20px; right:24px; background:none; border:none; color:#fff; font-size:2.2rem; line-height:1; cursor:pointer;">&times;</button>
+  <button id="lightbox-close" type="button" style="position:absolute; top:20px; right:24px; background:none; border:none; color:#fff; font-size:2.2rem; line-height:1; cursor:pointer; z-index:10;">&times;</button>
+  <button id="lightbox-prev" type="button" class="lightbox-nav lightbox-nav-prev">&#8249;</button>
   <div id="lightbox-content" style="max-width:95vw; max-height:90vh; display:flex; align-items:center; justify-content:center;"></div>
+  <button id="lightbox-next" type="button" class="lightbox-nav lightbox-nav-next">&#8250;</button>
 </div>
   
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -1564,18 +1570,14 @@ galeria = `
   });
 
   grid.querySelectorAll('.gallery-expand-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const horseId = btn.getAttribute('data-horse-id');
-      const horse = horses.find(h => h.id === horseId);
-      if(!horse) return;
-      const container = btn.closest('.horse-gallery');
-      const index = parseInt(container.getAttribute('data-index'), 10) || 0;
-      const item = normalizarMedia(horse.fotos[index]);
-      abrirLightbox(item.url, item.tipo);
-    });
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const horseId = btn.getAttribute('data-horse-id');
+    const container = btn.closest('.horse-gallery');
+    const index = parseInt(container.getAttribute('data-index'), 10) || 0;
+    abrirLightbox(horseId, index);
   });
-}
+});
 
 function setFoto(horseId, index){
   const horse = horses.find(h => h.id === horseId);
@@ -1606,24 +1608,60 @@ function cambiarFoto(horseId, dir){
   setFoto(horseId, index + dir);
 }
 
-function abrirLightbox(url, tipo){
-  const content = document.getElementById('lightbox-content');
-  if(tipo === 'video'){
-    content.innerHTML = `<video src="${optimizarMediaUrl(url, 'video')}" controls autoplay muted playsinline style="max-width:95vw;max-height:90vh;"></video>`;
-  } else {
-    content.innerHTML = `<img src="${optimizarMediaUrl(url, 'imagen')}" style="max-width:95vw;max-height:90vh;object-fit:contain;">`;
-  }
+let lightboxHorseId = null;
+let lightboxIndex = 0;
+
+function abrirLightbox(horseId, index){
+  const horse = horses.find(h => h.id === horseId);
+  if(!horse || !horse.fotos || horse.fotos.length === 0) return;
+  lightboxHorseId = horseId;
+  lightboxIndex = ((index % horse.fotos.length) + horse.fotos.length) % horse.fotos.length;
+  renderLightboxContent();
   document.getElementById('lightbox-modal').classList.remove('oculto');
 }
+
+function renderLightboxContent(){
+  const horse = horses.find(h => h.id === lightboxHorseId);
+  if(!horse) return;
+  const item = normalizarMedia(horse.fotos[lightboxIndex]);
+  const content = document.getElementById('lightbox-content');
+  if(item.tipo === 'video'){
+    content.innerHTML = `<video src="${optimizarMediaUrl(item.url, 'video')}" controls autoplay muted playsinline style="max-width:95vw;max-height:90vh;"></video>`;
+  } else {
+    content.innerHTML = `<img src="${optimizarMediaUrl(item.url, 'imagen')}" style="max-width:95vw;max-height:90vh;object-fit:contain;">`;
+  }
+
+  const total = horse.fotos.length;
+  document.getElementById('lightbox-prev').style.display = total > 1 ? 'flex' : 'none';
+  document.getElementById('lightbox-next').style.display = total > 1 ? 'flex' : 'none';
+}
+
+function moverLightbox(dir){
+  const horse = horses.find(h => h.id === lightboxHorseId);
+  if(!horse) return;
+  const total = horse.fotos.length;
+  lightboxIndex = ((lightboxIndex + dir) % total + total) % total;
+  renderLightboxContent();
+}
+
 function cerrarLightbox(){
   document.getElementById('lightbox-modal').classList.add('oculto');
   document.getElementById('lightbox-content').innerHTML = '';
+  lightboxHorseId = null;
 }
+
 document.getElementById('lightbox-close').addEventListener('click', cerrarLightbox);
+document.getElementById('lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); moverLightbox(-1); });
+document.getElementById('lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); moverLightbox(1); });
 document.getElementById('lightbox-modal').addEventListener('click', (e) => {
   if(e.target.id === 'lightbox-modal') cerrarLightbox();
 });
-
+document.addEventListener('keydown', (e) => {
+  if(document.getElementById('lightbox-modal').classList.contains('oculto')) return;
+  if(e.key === 'ArrowLeft') moverLightbox(-1);
+  if(e.key === 'ArrowRight') moverLightbox(1);
+  if(e.key === 'Escape') cerrarLightbox();
+});
 
 async function placeBid(horseId){
   if(!currentUser) return;
