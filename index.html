@@ -1681,9 +1681,7 @@ galeria = `
             <div class="bid-panel">
           <span class="bid-label">OFERTA ACTUAL &middot; ARS</span>
           <div class="bid-amount">${fmt(h.currentBid)}</div>
-              <div class="bid-meta">
-                ${h.bids.length} oferta${h.bids.length === 1 ? '' : 's'} &middot; ${personasUnicas} persona${personasUnicas === 1 ? '' : 's'}
-              </div>
+             
               ${banner}
               <button class="btn btn-bid btn-bid-main" data-horse-id="${h.id}" ${puedeOfertar ? '' : 'disabled'}>
               ${cerrada ? 'Lote cerrado' : proxima ? 'El remate aún no comenzó' : soyLider ? 'Ya vas ganando' : !currentUser ? 'Registrate para ofertar' : 'Ofertar ' + fmt(proximaOferta)}
