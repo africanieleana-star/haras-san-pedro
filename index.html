@@ -1616,9 +1616,14 @@ function renderHorses(){
       banner = `<div class="ganando-banner">Lote cerrado. Ganó ${primerNombreInicial(h.liderNombre, h.liderApellido)} con ${fmt(h.currentBid)}.</div>`;
     } else if(!cerrada && soyLider){
       banner = `<div class="ganando-banner">Estás ganando este lote con ${fmt(h.currentBid)}.</div>`;
-    } else if(!cerrada && yoOferte && !soyLider){
-      banner = `<div class="superado-banner">Tu oferta fue superada. La puja actual es ${fmt(h.currentBid)}.</div>`;
+
+
+   } else if(!cerrada && yoOferte && !soyLider){
+      banner = `<div class="superado-banner">Tu oferta fue superada. Va ganando ${primerNombreInicial(h.liderNombre, h.liderApellido)} con ${fmt(h.currentBid)}.</div>`;
+    } else if(!cerrada && tieneOfertas){
+      banner = `<div class="ganando-banner">Va ganando ${primerNombreInicial(h.liderNombre, h.liderApellido)} con ${fmt(h.currentBid)}.</div>`;
     }
+    
 
     let cuentaRegresiva = '';
     if(proxima){
